@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { Timeline } from "@/components/ui/timeline";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
-import { Leaf, Award, MapPin, Calendar, Sprout, User } from "lucide-react";
+import { Leaf, Award, MapPin, Calendar, Sprout, User, ShieldCheck } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +11,7 @@ export default async function TracePage({ params }: { params: { id: string } }) 
         where: { id: params.id },
         include: {
             events: { orderBy: { date: 'desc' } },
-            producers: true // Multi producers
+            producers: true
         }
     });
 
@@ -20,98 +20,148 @@ export default async function TracePage({ params }: { params: { id: string } }) 
     }
 
     return (
-        <div className="min-h-screen bg-earth-50 dark:bg-zinc-950 pb-12">
-            {/* Mobile-first Header */}
-            <div className="relative h-72 bg-primary-900 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay" />
-                <div className="absolute inset-0 bg-gradient-to-t from-earth-50 dark:from-zinc-950 to-transparent" />
+        <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-950 dark:to-zinc-900">
+            {/* Hero Image Section */}
+            <div className="relative h-80 md:h-96 bg-gradient-to-br from-primary-900 to-primary-800 overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-zinc-950 via-transparent to-transparent" />
 
-                <div className="absolute bottom-0 left-0 p-6 w-full">
-                    <span className="inline-block px-3 py-1 mb-3 rounded-full bg-primary-500/20 backdrop-blur-md border border-primary-400/30 text-primary-100 text-xs font-bold tracking-wider">
-                        RASTREADO & VERIFICADO
-                    </span>
-                    <h1 className="text-4xl font-bold text-white mb-2">{lot.cropType}</h1>
-                    <div className="flex items-center text-primary-100 text-sm gap-4">
-                        {lot.latitude && (
-                            <span className="flex items-center gap-1">
-                                <MapPin size={14} /> {lot.latitude.toFixed(4)}, {lot.longitude?.toFixed(4)}
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                    <div className="max-w-2xl mx-auto">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{lot.cropType}</h1>
+                        <div className="flex flex-wrap items-center gap-4 text-primary-100 text-sm">
+                            {lot.latitude && (
+                                <span className="flex items-center gap-1.5">
+                                    <MapPin size={16} />
+                                    {lot.latitude.toFixed(4)}, {lot.longitude?.toFixed(4)}
+                                </span>
+                            )}
+                            <span className="flex items-center gap-1.5">
+                                <Calendar size={16} />
+                                Safra {new Date(lot.plantingDate).getFullYear()}
                             </span>
-                        )}
-                        <span className="flex items-center gap-1"><Calendar size={14} /> Safra {new Date(lot.plantingDate).getFullYear()}</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="px-6 max-w-lg mx-auto -mt-10 relative z-10 space-y-8">
+            {/* Main Content */}
+            <div className="max-w-2xl mx-auto px-6 pb-16 -mt-8 relative z-10">
 
-                {/* Producers Cards */}
-                <section className="space-y-4">
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 px-1">Produtores Responsáveis</h2>
-
-                    {lot.producers.map(producer => (
-                        <div key={producer.id} className="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-xl border border-zinc-100 dark:border-zinc-800">
-                            {/* Farm Image */}
-                            <div className="h-32 bg-zinc-200 w-full relative">
-                                {producer.farmImage ? (
-                                    <img src={producer.farmImage} className="w-full h-full object-cover" alt="Farm" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-primary-50 text-primary-200">
-                                        <Sprout size={48} />
-                                    </div>
-                                )}
-                                <div className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded-md backdrop-blur-md flex items-center gap-1">
-                                    <MapPin size={10} />
-                                    {producer.farmLatitude?.toFixed(4)}, {producer.farmLongitude?.toFixed(4)}
-                                </div>
-                            </div>
-
-                            <div className="p-4 flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xl font-bold shrink-0">
-                                    {producer.name ? producer.name[0] : 'P'}
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{producer.name || 'Produtor'}</h3>
-                                    <p className="text-xs text-zinc-500 font-semibold">{producer.farmName}</p>
-                                </div>
-                            </div>
+                {/* Authenticity Verified Badge */}
+                <div className="bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 mb-8 shadow-sm">
+                    <div className="flex items-center justify-center gap-3">
+                        <div className="h-12 w-12 rounded-full bg-emerald-500 flex items-center justify-center">
+                            <ShieldCheck className="text-white" size={28} />
                         </div>
-                    ))}
-                </section>
-
-                {/* Story / Timeline */}
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between px-1">
-                        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                            <Leaf className="text-primary-600" size={20} />
-                            Jornada do Produto
-                        </h2>
+                        <div>
+                            <h3 className="text-lg font-bold text-emerald-900 dark:text-emerald-100">Authenticity Verified</h3>
+                            <p className="text-sm text-emerald-700 dark:text-emerald-300">This product has been traced and verified</p>
+                        </div>
                     </div>
+                </div>
+
+                {/* Product Journey */}
+                <section className="mb-8">
+                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-2">
+                        <Leaf className="text-primary-600" size={24} />
+                        Product Journey
+                    </h2>
 
                     <div className="bg-white dark:bg-zinc-900/50 rounded-2xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-800">
                         <Timeline events={lot.events} />
                     </div>
-                </div>
+                </section>
 
-                {/* Footprint / Stats */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-800/30 text-center">
-                        <Sprout className="mx-auto text-emerald-600 mb-2" />
-                        <div className="text-xl font-bold text-emerald-900 dark:text-emerald-100">
-                            {lot.area} <span className="text-sm font-normal">{lot.unit}</span>
+                {/* Producers Section */}
+                <section className="mb-8">
+                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Responsible Producers</h2>
+
+                    <div className="space-y-4">
+                        {lot.producers.map(producer => (
+                            <div key={producer.id} className="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-lg border border-zinc-100 dark:border-zinc-800">
+                                {/* Farm Image */}
+                                <div className="h-40 bg-zinc-200 dark:bg-zinc-800 w-full relative">
+                                    {producer.farmImage ? (
+                                        <img src={producer.farmImage} className="w-full h-full object-cover" alt="Farm" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-primary-50 dark:bg-primary-950 text-primary-300">
+                                            <Sprout size={56} />
+                                        </div>
+                                    )}
+                                    {producer.farmLatitude && (
+                                        <div className="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-lg backdrop-blur-md flex items-center gap-1.5">
+                                            <MapPin size={12} />
+                                            {producer.farmLatitude.toFixed(4)}, {producer.farmLongitude?.toFixed(4)}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="p-5 flex items-center gap-4">
+                                    <div className="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 text-xl font-bold shrink-0">
+                                        {producer.name ? producer.name[0].toUpperCase() : 'P'}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{producer.name || 'Producer'}</h3>
+                                        <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">{producer.farmName}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Certifications - from lot data */}
+                {lot.certifications && (
+                    <section className="mb-8">
+                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Certifications</h2>
+                        <div className="grid grid-cols-2 gap-4">
+                            {lot.certifications.split(',').map((cert: string, idx: number) => (
+                                <div key={idx} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+                                    <Award className="text-emerald-600 mb-3" size={32} />
+                                    <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{cert.trim()}</p>
+                                </div>
+                            ))}
                         </div>
-                        <div className="text-xs text-emerald-700 dark:text-emerald-300">Volume Total</div>
+                    </section>
+                )}
+
+                {/* Our Commitment Card */}
+                <section className="mb-8">
+                    <div className="bg-gradient-to-br from-primary-800 to-primary-900 rounded-2xl p-8 shadow-xl text-white">
+                        <h2 className="text-2xl font-bold mb-4">Our Commitment</h2>
+                        <p className="text-primary-100 leading-relaxed mb-4">
+                            We bring transparency to every step of our production process. From planting to harvest,
+                            every stage is documented and verified to ensure the highest quality and sustainability standards.
+                        </p>
+                        <p className="text-primary-200 text-sm">
+                            By choosing our products, you support sustainable farming practices and local communities.
+                        </p>
                     </div>
-                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/30 text-center">
-                        <User className="mx-auto text-blue-600 mb-2" />
-                        <div className="text-xl font-bold text-blue-900 dark:text-blue-100">{lot.producers.length}</div>
-                        <div className="text-xs text-blue-700 dark:text-blue-300">Famílias Produtoras</div>
+                </section>
+
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800/30 text-center">
+                        <Sprout className="mx-auto text-emerald-600 mb-3" size={32} />
+                        <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
+                            {lot.area} <span className="text-base font-normal">{lot.unit}</span>
+                        </div>
+                        <div className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">Total Volume</div>
+                    </div>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800/30 text-center">
+                        <User className="mx-auto text-blue-600 mb-3" size={32} />
+                        <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{lot.producers.length}</div>
+                        <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">Producer Families</div>
                     </div>
                 </div>
 
-                <div className="text-center pt-8 pb-12 opacity-50">
-                    <p className="text-xs">Rastreabilidade fornecida por <strong>AgroTrace</strong></p>
+                {/* Footer */}
+                <div className="text-center pt-8 pb-8 opacity-50">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                        Traceability powered by <strong className="text-primary-600">AgroTrace</strong>
+                    </p>
                 </div>
-
             </div>
         </div>
     );

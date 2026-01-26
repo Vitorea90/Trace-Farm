@@ -19,7 +19,7 @@ interface Event {
     id: string;
     type: string;
     title: string;
-    description?: string;
+    description?: string | null;
     date: string | Date;
 }
 

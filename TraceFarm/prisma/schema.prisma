@@ -43,8 +43,16 @@ model Lot {
   area                 Float
   unit                 String   @default("KG") // KG or LITERS
   
+  // Production dates
   plantingDate         DateTime
-  estimatedHarvestDate DateTime?
+  harvestDate          DateTime // Actual harvest date (required)
+  
+  // Harvest information
+  harvestWeight        Float? // Total weight/quantity harvested
+  quality              String? // Quality grade (A, B, C, Premium, etc.)
+  certifications       String? // Comma-separated: Organic,Rainforest Alliance,Fair Trade
+  storageLocation      String? // Where product is currently stored
+  
   status               String   @default("ACTIVE")
   
   createdAt            DateTime @default(now())
@@ -56,11 +64,19 @@ model Event {
   id          String   @id @default(uuid())
   lotId       String
   lot         Lot      @relation(fields: [lotId], references: [id])
-  type        String
+  
+  // Event type - simplified to focus on sales
+  type        String   @default("SALE") // SALE primarily
   title       String
   description String?
   date        DateTime @default(now())
   location    String?
+  
+  // Sale-specific fields
+  buyerName      String? // Name of wholesale buyer
+  buyerType      String? // WHOLESALER, DISTRIBUTOR, RETAILER
+  quantitySold   Float?  // Amount sold in this transaction
+  
   createdBy   String?
   createdAt   DateTime @default(now())
 }

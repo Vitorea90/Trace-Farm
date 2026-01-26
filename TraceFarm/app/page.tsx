@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Leaf, ShieldCheck, QrCode } from "lucide-react";
+import { TraceInput } from "@/components/ui/trace-input";
 
 export default function Home() {
     return (
@@ -20,12 +21,16 @@ export default function Home() {
                         Conectando o produtor ao consumidor final com transparência e tecnologia.
                     </p>
 
+                    {/* Trace Input */}
+                    <div className="mb-8 flex justify-center">
+                        <TraceInput />
+                    </div>
+
                     <div className="flex gap-4 justify-center">
-                        <Link href="/dashboard" className="px-8 py-3 bg-primary-600 hover:bg-primary-500 rounded-full font-semibold transition-all shadow-lg hover:shadow-primary-500/30 flex items-center gap-2">
+                        <Link href="/login" className="px-8 py-3 bg-primary-600 hover:bg-primary-500 rounded-full font-semibold transition-all shadow-lg hover:shadow-primary-500/30 flex items-center gap-2">
                             <Leaf size={20} />
                             Acesso Produtor
                         </Link>
-                        {/* Demo link for consumer view would go here */}
                     </div>
                 </div>
             </div>

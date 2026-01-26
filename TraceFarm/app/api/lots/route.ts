@@ -26,7 +26,11 @@ export async function POST(request: Request) {
             area,
             unit,
             plantingDate,
-            estimatedHarvestDate,
+            harvestDate,
+            harvestWeight,
+            quality,
+            certifications,
+            storageLocation,
             producerIds // Array of strings
         } = body;
 
@@ -42,18 +46,15 @@ export async function POST(request: Request) {
                 area: parseFloat(area),
                 unit,
                 plantingDate: new Date(plantingDate),
-                estimatedHarvestDate: estimatedHarvestDate ? new Date(estimatedHarvestDate) : null,
+                harvestDate: new Date(harvestDate),
+                harvestWeight: harvestWeight ? parseFloat(harvestWeight) : null,
+                quality: quality || null,
+                certifications: certifications || null,
+                storageLocation: storageLocation || null,
                 producers: {
                     connect: producerIds.map((id: string) => ({ id }))
-                },
-                events: {
-                    create: {
-                        type: 'PLANTING',
-                        title: 'Lote Registrado (Colhido)',
-                        description: `Registro realizado. Produto: ${cropType}.`,
-                        createdBy: 'Sistema'
-                    }
                 }
+                // No automatic event creation - events are for sales only
             },
         });
 
