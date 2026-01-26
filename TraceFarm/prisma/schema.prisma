@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("PRODUCER")
+  
+  // Farm Details
+  farmName      String?
+  farmLatitude  Float?
+  farmLongitude Float?
+  farmImage     String? // URL to image
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relation to Lot (Many-to-Many)
+  lots      Lot[]
+}
+
+model Lot {
+  id                   String   @id @default(uuid())
+  code                 String   @unique
+  
+  // Producers (Many-to-Many)
+  producers            User[]
+  
+  cropType             String
+  
+  // Lot specific location (Georeferencing)
+  locationname         String? // Optional name/desc
+  latitude             Float?
+  longitude            Float?
+
+  area                 Float
+  unit                 String   @default("KG") // KG or LITERS
+  
+  plantingDate         DateTime
+  estimatedHarvestDate DateTime?
+  status               String   @default("ACTIVE")
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  events               Event[]
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  lotId       String
+  lot         Lot      @relation(fields: [lotId], references: [id])
+  type        String
+  title       String
+  description String?
+  date        DateTime @default(now())
+  location    String?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+}
