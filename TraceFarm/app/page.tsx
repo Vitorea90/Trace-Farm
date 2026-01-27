@@ -1,68 +1,67 @@
 import Link from "next/link";
-import { Leaf, ShieldCheck, QrCode } from "lucide-react";
-import { TraceInput } from "@/components/ui/trace-input";
+import { ArrowRight, QrCode, Menu, Tractor } from "lucide-react";
 
 export default function Home() {
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-primary-900 to-black text-white">
-            <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-                <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-                    AgroTrace &nbsp;
-                    <code className="font-mono font-bold">v1.0</code>
-                </p>
+        <main className="relative min-h-screen flex flex-col text-white font-sans overflow-hidden">
+            {/* Background Image with Overlay */}
+            <div className="absolute inset-0 z-0">
+                <img
+                    src="https://images.unsplash.com/photo-1625246333195-24d2050f87cd?q=80&w=2670&auto=format&fit=crop"
+                    alt="Farm Background"
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-900/80 to-zinc-900/40" />
             </div>
 
-            <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-to-br before:from-transparent before:to-primary-700 before:opacity-10 before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-to-t after:from-green-900 after:via-green-800 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-green-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-                <div className="text-center">
-                    <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-emerald-200 mb-6">
-                        Rastreabilidade <br /> Inteligente
-                    </h1>
-                    <p className="text-xl text-emerald-100/80 mb-8 max-w-2xl mx-auto">
-                        Conectando o produtor ao consumidor final com transparência e tecnologia.
-                    </p>
+            {/* Navbar */}
+            <nav className="relative z-10 flex items-center justify-between px-6 py-6 md:px-12 max-w-7xl mx-auto w-full">
+                <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div className="h-8 w-8 bg-green-500 rounded-lg flex items-center justify-center text-black">
+                        <Tractor size={20} />
+                    </div>
+                    <span>Trace Farm</span>
+                </div>
+                <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                    <Menu size={24} />
+                </button>
+            </nav>
 
-                    {/* Trace Input */}
-                    <div className="mb-8 flex justify-center">
-                        <TraceInput />
+            {/* Hero Content */}
+            <div className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-12 pb-20 max-w-7xl mx-auto w-full">
+                <div className="max-w-2xl space-y-8">
+                    {/* Badge */}
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-900/30 border border-green-800 text-green-400 text-xs font-semibold tracking-wider uppercase backdrop-blur-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                        Web3 Agrotech
                     </div>
 
-                    <div className="flex gap-4 justify-center">
-                        <Link href="/login" className="px-8 py-3 bg-primary-600 hover:bg-primary-500 rounded-full font-semibold transition-all shadow-lg hover:shadow-primary-500/30 flex items-center gap-2">
-                            <Leaf size={20} />
-                            Acesso Produtor
+                    {/* Headline */}
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight">
+                        Rastreabilidade agrícola que gera <span className="text-green-500">confiança</span>,<br className="hidden md:block" /> transparência e valor.
+                    </h1>
+
+                    {/* Subheadline */}
+                    <p className="text-lg md:text-xl text-zinc-300 max-w-xl leading-relaxed">
+                        A plataforma Web3 que conecta o campo ao consumidor final com dados imutáveis, garantindo a origem de cada produto.
+                    </p>
+
+                    {/* Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                        <Link href="/dashboard">
+                            <button className="w-full sm:w-auto h-12 md:h-14 px-8 rounded-lg bg-green-500 hover:bg-green-400 text-black font-semibold text-base transition-all flex items-center justify-center gap-2">
+                                Acessar Dashboard
+                                <ArrowRight size={20} />
+                            </button>
+                        </Link>
+
+                        <Link href="/trace">
+                            <button className="w-full sm:w-auto h-12 md:h-14 px-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-base transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
+                                <QrCode size={20} className="text-green-500" />
+                                Rastrear um Lote
+                            </button>
                         </Link>
                     </div>
-                </div>
-            </div>
-
-            <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-3 lg:text-left mt-20 gap-8">
-                <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-neutral-700 hover:bg-neutral-800/30">
-                    <h2 className={`mb-3 text-2xl font-semibold flex items-center gap-2`}>
-                        Setup Rápido
-                    </h2>
-                    <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-                        Cadastre seus lotes em segundos e gere QR Codes automaticamente.
-                    </p>
-                </div>
-
-                <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-neutral-700 hover:bg-neutral-800/30">
-                    <h2 className={`mb-3 text-2xl font-semibold flex items-center gap-2`}>
-                        <QrCode />
-                        QR Code Dinâmico
-                    </h2>
-                    <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-                        O mesmo código atualiza informações conforme o lote avança.
-                    </p>
-                </div>
-
-                <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-neutral-700 hover:bg-neutral-800/30">
-                    <h2 className={`mb-3 text-2xl font-semibold flex items-center gap-2`}>
-                        <ShieldCheck />
-                        Transparência
-                    </h2>
-                    <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-                        Histórico imutável de eventos para garantir a origem.
-                    </p>
                 </div>
             </div>
         </main>

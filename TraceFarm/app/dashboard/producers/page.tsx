@@ -2,6 +2,7 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ActionButtons } from "@/components/ui/action-buttons";
 import { MapPin, User, ArrowRight } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -27,22 +28,25 @@ export default async function ProducersPage() {
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {producers.map((producer) => (
-                    <Card key={producer.id} className="group hover:shadow-lg transition-all">
-                        <CardHeader className="pb-3 flex flex-row gap-4 items-center">
-                            {producer.farmImage && (
-                                <div className="h-12 w-12 rounded-full bg-zinc-100 overflow-hidden shrink-0">
-                                    <img src={producer.farmImage} alt="Farm" className="h-full w-full object-cover" />
+                    <Card key={producer.id} className="group hover:shadow-lg transition-all relative">
+                        <CardHeader className="pb-3 flex flex-row gap-4 items-start justify-between">
+                            <div className="flex gap-4 items-center">
+                                {producer.farmImage && (
+                                    <div className="h-12 w-12 rounded-full bg-zinc-100 overflow-hidden shrink-0">
+                                        <img src={producer.farmImage} alt="Farm" className="h-full w-full object-cover" />
+                                    </div>
+                                )}
+                                {!producer.farmImage && (
+                                    <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold shrink-0">
+                                        {producer.name ? producer.name[0] : 'P'}
+                                    </div>
+                                )}
+                                <div className="overflow-hidden">
+                                    <CardTitle className="text-lg truncate">{producer.name}</CardTitle>
+                                    <p className="text-xs text-zinc-500 truncate">{producer.farmName || 'Fazenda sem nome'}</p>
                                 </div>
-                            )}
-                            {!producer.farmImage && (
-                                <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold shrink-0">
-                                    {producer.name ? producer.name[0] : 'P'}
-                                </div>
-                            )}
-                            <div className="overflow-hidden">
-                                <CardTitle className="text-lg truncate">{producer.name}</CardTitle>
-                                <p className="text-xs text-zinc-500 truncate">{producer.farmName || 'Fazenda sem nome'}</p>
                             </div>
+                            <ActionButtons id={producer.id} type="producers" />
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">

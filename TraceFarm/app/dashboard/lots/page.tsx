@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Sprout, MapPin, Calendar, ArrowRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
+import { ActionButtons } from "@/components/ui/action-buttons";
+
 export const dynamic = 'force-dynamic';
 
 export default async function LotsPage() {
@@ -27,26 +29,31 @@ export default async function LotsPage() {
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {lots.map((lot) => (
-                    <Card key={lot.id} className="group hover:shadow-lg transition-all border-l-4 border-l-primary-500">
+                    <Card key={lot.id} className="group hover:shadow-lg transition-all border-l-4 border-l-primary-500 relative">
                         <CardHeader className="pb-3">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <span className="text-xs font-mono text-zinc-400 mb-1 block">{lot.code}</span>
+                                    <div className="flex items-center justify-between w-full">
+                                        <span className="text-xs font-mono text-zinc-400 mb-1 block">{lot.code}</span>
+                                    </div>
                                     <CardTitle className="text-xl flex items-center gap-2">
                                         <Sprout size={20} className="text-primary-600" />
                                         {lot.cropType}
                                     </CardTitle>
                                 </div>
-                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${lot.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                                    }`}>
-                                    {lot.status === 'ACTIVE' ? 'Em Andamento' : lot.status}
-                                </span>
+                                <div className="flex flex-col items-end gap-2">
+                                    <ActionButtons id={lot.id} type="lots" />
+                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${lot.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                                        }`}>
+                                        {lot.status === 'ACTIVE' ? 'Em Andamento' : lot.status}
+                                    </span>
+                                </div>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
                                 <MapPin size={16} />
-                                {lot.location} ({lot.area} ha)
+                                {lot.locationname || 'Localização não definida'} ({lot.area} {lot.unit})
                             </div>
                             <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
                                 <Calendar size={16} />
