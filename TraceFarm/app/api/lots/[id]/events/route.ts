@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 export async function POST(request: Request, { params }: { params: { id: string } }) {
     try {
         const body = await request.json();
-        const { type, title, description, date } = body;
+        const { type, title, description, date, buyerName, buyerType, quantitySold } = body;
 
         const event = await prisma.event.create({
             data: {
@@ -13,6 +13,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
                 title,
                 description,
                 date: date ? new Date(date) : new Date(),
+                buyerName: buyerName || null,
+                buyerType: buyerType || null,
+                quantitySold: quantitySold || null,
                 createdBy: "Produtor Demo" // normally from session
             }
         });

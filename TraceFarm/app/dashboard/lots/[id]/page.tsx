@@ -34,9 +34,9 @@ export default async function LotDetailPage({ params }: { params: { id: string }
                     </div>
                     <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">{lot.cropType}</h1>
                     <div className="flex flex-wrap gap-4 text-zinc-500 text-sm">
-                        <span className="flex items-center gap-1"><MapPin size={16} /> {lot.location}</span>
-                        <span className="flex items-center gap-1"><Sprout size={16} /> {lot.area} ha</span>
-                        <span className="flex items-center gap-1"><Calendar size={16} /> Plantio: {formatDate(lot.plantingDate)}</span>
+                        {lot.storageLocation && <span className="flex items-center gap-1"><MapPin size={16} /> {lot.storageLocation}</span>}
+                        <span className="flex items-center gap-1"><Sprout size={16} /> {lot.area} {lot.unit}</span>
+                        <span className="flex items-center gap-1"><Calendar size={16} /> Colheita: {formatDate(lot.harvestDate)}</span>
                     </div>
                 </div>
 

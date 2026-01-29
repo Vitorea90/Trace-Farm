@@ -53,11 +53,11 @@ export default async function LotsPage() {
                         <CardContent className="space-y-3">
                             <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
                                 <MapPin size={16} />
-                                {lot.locationname || 'Localização não definida'} ({lot.area} {lot.unit})
+                                {lot.storageLocation || 'Local não definido'} • {lot.area} {lot.unit}
                             </div>
                             <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
                                 <Calendar size={16} />
-                                Plantio: {formatDate(lot.plantingDate)}
+                                Colheita: {formatDate(lot.harvestDate)}
                             </div>
 
                             <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">

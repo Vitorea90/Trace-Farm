@@ -27,10 +27,13 @@ export function LotClientActions({ lotId, lotCode }: { lotId: string, lotCode: s
         setLoading(true);
         const formData = new FormData(e.currentTarget);
         const data = {
-            type: formData.get('type'),
-            title: formData.get('title'),
+            type: 'SOLD',
+            title: `Venda para ${formData.get('buyerName')}`,
             description: formData.get('description'),
             date: formData.get('date'),
+            buyerName: formData.get('buyerName'),
+            buyerType: formData.get('buyerType'),
+            quantitySold: parseFloat(formData.get('quantitySold') as string),
         };
 
         try {
@@ -57,43 +60,48 @@ export function LotClientActions({ lotId, lotCode }: { lotId: string, lotCode: s
                 </Button>
                 <Button onClick={() => setEventModalOpen(true)} className="gap-2">
                     <Plus size={18} />
-                    Registrar Evento
+                    Registrar Venda
                 </Button>
             </div>
 
-            {/* Add Event Modal */}
-            <Modal isOpen={isEventModalOpen} onClose={() => setEventModalOpen(false)} title="Novo Evento">
+            {/* Add Sale Event Modal */}
+            <Modal isOpen={isEventModalOpen} onClose={() => setEventModalOpen(false)} title="Registrar Venda">
                 <form onSubmit={handleAddEvent} className="space-y-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Tipo de Evento</label>
-                        <select name="type" className="w-full h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm" required>
-                            <option value="MANAGEMENT">Manejo / Tratamento</option>
-                            <option value="HARVEST">Colheita</option>
-                            <option value="TRANSPORT">Transporte</option>
-                            <option value="PROCESSING">Processamento</option>
+                        <label className="text-sm font-medium">Nome do Comprador</label>
+                        <Input name="buyerName" placeholder="Ex: Distribuidora ABC Ltda" required />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Tipo de Comprador</label>
+                        <select name="buyerType" className="w-full h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm" required>
+                            <option value="">Selecione...</option>
+                            <option value="WHOLESALER">Atacadista</option>
+                            <option value="DISTRIBUTOR">Distribuidor</option>
+                            <option value="RETAILER">Varejista</option>
+                            <option value="CONSUMER">Consumidor Final</option>
                         </select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Título</label>
-                        <Input name="title" placeholder="Ex: Aplicação de fertilizante" required />
+                        <label className="text-sm font-medium">Quantidade Vendida</label>
+                        <Input name="quantitySold" type="number" step="0.01" placeholder="Ex: 500" required />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Descrição / Observações</label>
+                        <label className="text-sm font-medium">Observações (opcional)</label>
                         <textarea
                             name="description"
                             className="w-full min-h-[80px] rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm"
-                            placeholder="Detalhes adicionais..."
+                            placeholder="Informações adicionais sobre a venda..."
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Data do Evento</label>
+                        <label className="text-sm font-medium">Data da Venda</label>
                         <Input name="date" type="datetime-local" defaultValue={new Date().toISOString().slice(0, 16)} required />
                     </div>
 
                     <div className="pt-2 flex justify-end gap-2">
                         <Button type="button" variant="ghost" onClick={() => setEventModalOpen(false)}>Cancelar</Button>
                         <Button type="submit" disabled={loading}>
-                            {loading ? <Loader2 className="animate-spin" /> : 'Salvar Evento'}
+                            {loading ? <Loader2 className="animate-spin" /> : 'Registrar Venda'}
                         </Button>
                     </div>
                 </form>

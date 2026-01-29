@@ -86,6 +86,28 @@ export async function POST(request: Request) {
             data: createData
         });
 
+        // Create automatic timeline events for production start and harvest
+        await prisma.event.createMany({
+            data: [
+                {
+                    lotId: lot.id,
+                    type: 'PLANTING',
+                    title: 'Início da Produção',
+                    description: `Início do período de produção do lote de ${lot.cropType}`,
+                    date: pDate,
+                },
+                {
+                    lotId: lot.id,
+                    type: 'HARVEST',
+                    title: 'Colheita do Mel',
+                    description: lot.harvestWeight
+                        ? `Colheita de ${lot.harvestWeight} ${lot.unit} de ${lot.cropType}`
+                        : `Colheita de ${lot.cropType} realizada`,
+                    date: hDate,
+                }
+            ]
+        });
+
         return NextResponse.json(lot);
     } catch (error: any) {
         console.error("Create Lot Error (Full):", error);

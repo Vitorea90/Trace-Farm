@@ -11,7 +11,7 @@ import dynamic from 'next/dynamic';
 
 const MapPicker = dynamic(() => import('@/components/ui/map-picker'), {
     ssr: false,
-    loading: () => <div className="h-[300px] w-full bg-zinc-100 animate-pulse rounded-lg" />
+    loading: () => <div className="h-[250px] w-full bg-zinc-100 animate-pulse rounded-lg" />
 });
 
 interface Producer {
@@ -21,60 +21,19 @@ interface Producer {
 }
 
 const CERTIFICATIONS = [
-    { value: 'Organic', label: 'Orgânico (USDA/EU)' },
-    { value: 'Rainforest Alliance', label: 'Rainforest Alliance' },
+    { value: 'Organic', label: 'Orgânico' },
     { value: 'Fair Trade', label: 'Fair Trade' },
+    { value: 'Rainforest Alliance', label: 'Rainforest Alliance' },
     { value: 'Non-GMO', label: 'Não-OGM' },
 ];
 
-interface LotFormProps {
-    initialData?: {
-        id?: string;
-        cropType: string;
-        area: number;
-        unit: string;
-        plantingDate: string | Date; // Depending on how it comes from API
-        harvestDate?: string | Date;
-        harvestWeight: number | null;
-        quality: string | null;
-        certifications: string | null;
-        storageLocation: string | null;
-        producers?: Producer[];
-        location?: string;
-        latitude?: number | null;
-        longitude?: number | null;
-    };
-    isEdit?: boolean;
-}
-
-export function LotForm({ initialData, isEdit = false }: LotFormProps) {
+export function LotForm() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [producers, setProducers] = useState<Producer[]>([]);
-
-    // Initial coords
-    const [coords, setCoords] = useState<{ lat: number, lng: number } | null>(
-        initialData?.latitude && initialData?.longitude
-            ? { lat: initialData.latitude, lng: initialData.longitude }
-            : null
-    );
-
-    // Initial certifications
-    const [selectedCerts, setSelectedCerts] = useState<string[]>(
-        initialData?.certifications ? initialData.certifications.split(',') : []
-    );
-
-    // Initial producers
-    const [selectedProducerIds, setSelectedProducerIds] = useState<string[]>(
-        initialData?.producers ? initialData.producers.map(p => p.id) : []
-    );
-
-    // Format dates for input[type="date"]
-    const formatDateForInput = (date: string | Date | undefined) => {
-        if (!date) return '';
-        const d = new Date(date);
-        return d.toISOString().split('T')[0];
-    };
+    const [coords, setCoords] = useState<{ lat: number, lng: number } | null>(null);
+    const [selectedCerts, setSelectedCerts] = useState<string[]>([]);
+    const [selectedProducerId, setSelectedProducerId] = useState<string>('');
 
     // Fetch producers
     useEffect(() => {
@@ -90,16 +49,9 @@ export function LotForm({ initialData, isEdit = false }: LotFormProps) {
         const formData = new FormData(e.currentTarget);
         const harvestDateStr = formData.get('harvestDate') as string;
 
-        // Validation
-        const formProducerIds = formData.getAll('producers'); // This might catch manually checked boxes
-        // But if we use controlled state for checkboxes, we should use state.
-
-        // Actually, let's stick to the FormData approach for consistency with original, 
-        // essentially `selectedProducerIds` state helps with checked attribute but submission uses FormData if inputs match.
-        // Or we construct the payload manually.
-
-        if (selectedProducerIds.length === 0) {
-            alert('Selecione pelo menos um produtor responsável.');
+        // Validação mínima
+        if (!selectedProducerId) {
+            alert('Selecione um produtor responsável.');
             setLoading(false);
             return;
         }
@@ -110,37 +62,29 @@ export function LotForm({ initialData, isEdit = false }: LotFormProps) {
             return;
         }
 
+        // Calcular data de "plantio" automaticamente (6 meses antes da colheita)
         const harvestDate = new Date(harvestDateStr);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (harvestDate > today) {
-            alert('Data de colheita não pode ser futura.');
-            setLoading(false);
-            return;
-        }
+        const plantingDate = new Date(harvestDate);
+        plantingDate.setMonth(plantingDate.getMonth() - 6);
 
         const data = {
-            cropType: formData.get('cropType'),
+            cropType: 'Mel',
             latitude: coords?.lat || null,
             longitude: coords?.lng || null,
-            area: formData.get('area'),
+            area: parseFloat(formData.get('quantity') as string) || 0,
             unit: formData.get('unit'),
-            plantingDate: formData.get('plantingDate'),
-            harvestDate: harvestDateStr,
-            harvestWeight: formData.get('harvestWeight') || null,
+            plantingDate: plantingDate.toISOString(),
+            harvestDate: harvestDate.toISOString(),
+            harvestWeight: parseFloat(formData.get('quantity') as string) || null,
             quality: formData.get('quality') || null,
             certifications: selectedCerts.join(',') || null,
             storageLocation: formData.get('storageLocation') || null,
-            producerIds: selectedProducerIds
+            producerIds: [selectedProducerId]
         };
 
         try {
-            const url = isEdit ? `/api/lots/${initialData?.id}` : '/api/lots';
-            const method = isEdit ? 'PUT' : 'POST';
-
-            const res = await fetch(url, {
-                method: method,
+            const res = await fetch('/api/lots', {
+                method: 'POST',
                 body: JSON.stringify(data),
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -166,180 +110,239 @@ export function LotForm({ initialData, isEdit = false }: LotFormProps) {
         );
     };
 
-    const toggleProducer = (id: string) => {
-        setSelectedProducerIds(prev =>
-            prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id]
-        );
-    }
-
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="max-w-3xl mx-auto space-y-6 pb-12">
             <Link href="/dashboard/lots" className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
-                <ArrowLeft size={16} className="mr-1" /> Voltar para lista
+                <ArrowLeft size={16} className="mr-1" /> Voltar
             </Link>
 
             <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight">{isEdit ? 'Editar Lote' : 'Registrar Lote (Produto Colhido)'}</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Registrar Lote de Mel</h1>
                 <p className="text-zinc-500">
-                    {isEdit ? 'Atualize as informações do lote.' : 'Cadastre um lote já colhido com todas as informações de produção e qualidade.'}
+                    Cadastro rápido e simples. Preencha apenas as informações básicas.
                 </p>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Dados do Lote</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-
-                        {/* 1. Basic Info */}
-                        <div className="space-y-4">
-                            <h3 className="font-semibold text-sm uppercase tracking-wider text-zinc-500">Informações do Produto</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Cultura</label>
-                                    <select
-                                        name="cropType"
-                                        defaultValue={initialData?.cropType || 'Mel'}
-                                        className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm"
-                                        required
-                                    >
-                                        <option value="Mel">Mel</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Unidade de Medida</label>
-                                    <select
-                                        name="unit"
-                                        defaultValue={initialData?.unit || 'KG'}
-                                        className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm"
-                                        required
-                                    >
-                                        <option value="KG">Quilos (kg)</option>
-                                        <option value="LITERS">Litros (L)</option>
-                                    </select>
-                                </div>
-                            </div>
-
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {/* 1. Identificação do Lote */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">1. Identificação do Lote</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Quantidade Total do Lote</label>
-                                <Input name="area" type="number" step="0.01" defaultValue={initialData?.area} placeholder="0.00" required />
-                            </div>
-                        </div>
-
-                        {/* 2. Harvest Information */}
-                        <div className="space-y-4 pt-4 border-t border-zinc-100">
-                            <h3 className="font-semibold text-sm uppercase tracking-wider text-zinc-500">Informações da Colheita</h3>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Data de Plantio</label>
-                                    <Input name="plantingDate" type="date" defaultValue={formatDateForInput(initialData?.plantingDate)} required />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Data da Colheita</label>
-                                    <Input name="harvestDate" type="date" defaultValue={formatDateForInput(initialData?.harvestDate)} required max={new Date().toISOString().split("T")[0]} />
+                                <label className="text-sm font-medium text-zinc-700">Produto</label>
+                                <div className="flex h-10 w-full items-center rounded-md border border-zinc-200 bg-zinc-50 px-3 text-sm font-medium text-zinc-600">
+                                    🍯 Mel
                                 </div>
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Peso Total Colhido (opcional)</label>
-                                    <Input name="harvestWeight" type="number" step="0.01" defaultValue={initialData?.harvestWeight || ''} placeholder="Ex: 1500" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Classificação de Qualidade</label>
-                                    <select
-                                        name="quality"
-                                        defaultValue={initialData?.quality || ''}
-                                        className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm"
-                                    >
-                                        <option value="">Selecione...</option>
-                                        <option value="Premium">Premium</option>
-                                        <option value="A">Classe A</option>
-                                        <option value="B">Classe B</option>
-                                        <option value="C">Classe C</option>
-                                    </select>
-                                </div>
-                            </div>
-
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Local de Armazenamento</label>
-                                <Input name="storageLocation" type="text" defaultValue={initialData?.storageLocation || ''} placeholder="Ex: Armazém Central, Câmara Fria #3" />
+                                <label className="text-sm font-medium text-zinc-700">Unidade</label>
+                                <select
+                                    name="unit"
+                                    defaultValue="KG"
+                                    className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    required
+                                >
+                                    <option value="KG">Quilos (kg)</option>
+                                    <option value="LITERS">Litros (L)</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-zinc-700">Quantidade <span className="text-red-500">*</span></label>
+                                <Input
+                                    name="quantity"
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="Ex: 150"
+                                    required
+                                    className="focus:ring-2 focus:ring-primary-500"
+                                />
                             </div>
                         </div>
+                    </CardContent>
+                </Card>
 
-                        {/* 3. Certifications */}
-                        <div className="space-y-4 pt-4 border-t border-zinc-100">
-                            <h3 className="font-semibold text-sm uppercase tracking-wider text-zinc-500">Certificações</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {CERTIFICATIONS.map(cert => (
-                                    <label
-                                        key={cert.value}
-                                        className="flex items-center space-x-3 p-3 border border-zinc-200 rounded-lg hover:bg-zinc-50 cursor-pointer transition-all"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedCerts.includes(cert.value)}
-                                            onChange={() => toggleCertification(cert.value)}
-                                            className="h-4 w-4 rounded border-zinc-300 text-primary-600 focus:ring-primary-500"
-                                        />
-                                        <span className="text-sm font-medium">{cert.label}</span>
-                                    </label>
-                                ))}
+                {/* 2. Produção */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">2. Produção</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-zinc-700">Data da Colheita <span className="text-red-500">*</span></label>
+                                <Input
+                                    name="harvestDate"
+                                    type="date"
+                                    max={new Date().toISOString().split("T")[0]}
+                                    required
+                                    className="focus:ring-2 focus:ring-primary-500"
+                                />
+                                <p className="text-xs text-zinc-500">Quando o mel foi coletado</p>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-zinc-700">Período de Produção (opcional)</label>
+                                <Input
+                                    name="productionPeriod"
+                                    type="month"
+                                    placeholder="Mês/Ano"
+                                    className="focus:ring-2 focus:ring-primary-500"
+                                />
+                                <p className="text-xs text-zinc-500">Quando as abelhas produziram</p>
                             </div>
                         </div>
+                    </CardContent>
+                </Card>
 
-                        {/* 4. Geolocation */}
-                        <div className="space-y-4 pt-4 border-t border-zinc-100">
-                            <h3 className="font-semibold text-sm uppercase tracking-wider text-zinc-500 flex items-center gap-2">
-                                <MapPin size={16} /> Georreferenciação do Lote (Opcional)
-                            </h3>
-                            <p className="text-xs text-zinc-500">Local de processamento ou armazenamento do lote.</p>
-                            <MapPicker
-                                onChange={(lat, lng) => setCoords({ lat, lng })}
-                                lat={coords?.lat}
-                                lng={coords?.lng}
+                {/* 3. Qualidade */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">3. Qualidade (opcional)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-zinc-700">Classificação</label>
+                            <select
+                                name="quality"
+                                defaultValue=""
+                                className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            >
+                                <option value="">Não classificado</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Média">Média</option>
+                                <option value="Baixa">Baixa</option>
+                            </select>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* 4. Armazenamento */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">4. Armazenamento</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-zinc-700">Local de Armazenamento</label>
+                            <Input
+                                name="storageLocation"
+                                type="text"
+                                placeholder="Ex: Galpão 2, Sala de Estoque, Casa de Mel"
+                                className="focus:ring-2 focus:ring-primary-500"
                             />
+                            <p className="text-xs text-zinc-500">Onde o mel está guardado atualmente</p>
                         </div>
+                    </CardContent>
+                </Card>
 
-                        {/* 5. Producers */}
-                        <div className="space-y-4 pt-4 border-t border-zinc-100">
-                            <h3 className="font-semibold text-sm uppercase tracking-wider text-zinc-500">Produtores Responsáveis</h3>
-                            <div className="grid grid-cols-1 gap-2 bg-zinc-50 p-4 rounded-lg max-h-48 overflow-y-auto">
-                                {producers.length === 0 && <p className="text-sm text-zinc-400">Nenhum produtor cadastrado. Cadastre um produtor antes.</p>}
-                                {producers.map(p => (
-                                    <label key={p.id} className="flex items-center space-x-3 p-2 hover:bg-white rounded cursor-pointer border border-transparent hover:border-zinc-200 transition-all">
-                                        <input
-                                            type="checkbox"
-                                            value={p.id}
-                                            checked={selectedProducerIds.includes(p.id)}
-                                            onChange={() => toggleProducer(p.id)}
-                                            className="h-4 w-4 rounded border-zinc-300 text-primary-600 focus:ring-primary-500"
-                                        />
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-zinc-900">{p.name}</span>
-                                            <span className="text-xs text-zinc-500">{p.farmName}</span>
-                                        </div>
-                                    </label>
-                                ))}
-                            </div>
-                            <div className="text-right">
-                                <Link href="/dashboard/producers/new" className="text-xs text-primary-600 hover:text-primary-700 font-medium">
-                                    + Cadastre novo produtor
+                {/* 5. Certificações */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">5. Certificações (opcional)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {CERTIFICATIONS.map(cert => (
+                                <label
+                                    key={cert.value}
+                                    className="flex items-center space-x-3 p-3 border border-zinc-200 rounded-lg hover:bg-zinc-50 cursor-pointer transition-all"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedCerts.includes(cert.value)}
+                                        onChange={() => toggleCertification(cert.value)}
+                                        className="h-4 w-4 rounded border-zinc-300 text-primary-600 focus:ring-primary-500"
+                                    />
+                                    <span className="text-sm font-medium">{cert.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                        <p className="text-xs text-zinc-500 mt-3">Marque as certificações que o lote possui</p>
+                    </CardContent>
+                </Card>
+
+                {/* 6. Origem do Lote */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <MapPin size={18} />
+                            6. Origem do Lote (opcional)
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <p className="text-sm text-zinc-600">Marque um ponto aproximado no mapa onde o mel foi produzido</p>
+                        <MapPicker
+                            onChange={(lat, lng) => setCoords({ lat, lng })}
+                            lat={coords?.lat}
+                            lng={coords?.lng}
+                        />
+                        {coords && (
+                            <p className="text-xs text-zinc-500">
+                                📍 Localização marcada: {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
+                            </p>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* 7. Produtor Responsável */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">7. Produtor Responsável <span className="text-red-500">*</span></CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {producers.length === 0 ? (
+                            <div className="text-center py-8 bg-zinc-50 rounded-lg border-2 border-dashed border-zinc-200">
+                                <p className="text-sm text-zinc-600 mb-3">Nenhum produtor cadastrado ainda</p>
+                                <Link href="/dashboard/producers/new">
+                                    <Button type="button" variant="outline" size="sm">
+                                        + Cadastrar Primeiro Produtor
+                                    </Button>
                                 </Link>
                             </div>
-                        </div>
+                        ) : (
+                            <>
+                                <div className="space-y-2">
+                                    <select
+                                        value={selectedProducerId}
+                                        onChange={(e) => setSelectedProducerId(e.target.value)}
+                                        className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        required
+                                    >
+                                        <option value="">Selecione um produtor...</option>
+                                        {producers.map(p => (
+                                            <option key={p.id} value={p.id}>
+                                                {p.name} - {p.farmName}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="text-right">
+                                    <Link href="/dashboard/producers/new" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                                        + Cadastrar novo produtor
+                                    </Link>
+                                </div>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
 
-                        <div className="pt-4 flex justify-end gap-3">
-                            <Button type="button" variant="ghost" onClick={() => router.back()}>Cancelar</Button>
-                            <Button type="submit" disabled={loading} className="w-32">
-                                {loading ? <Loader2 className="animate-spin" size={18} /> : isEdit ? 'Salvar' : 'Registrar'}
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
+                {/* Actions */}
+                <div className="flex justify-between items-center pt-4">
+                    <Button type="button" variant="ghost" onClick={() => router.back()}>
+                        Cancelar
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        className="min-w-[160px] h-11 text-base font-semibold"
+                        size="lg"
+                    >
+                        {loading ? <Loader2 className="animate-spin" size={20} /> : '✓ Registrar Lote'}
+                    </Button>
+                </div>
+            </form>
         </div>
     );
 }

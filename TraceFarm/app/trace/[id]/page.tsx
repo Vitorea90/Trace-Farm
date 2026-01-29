@@ -38,7 +38,7 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                             )}
                             <span className="flex items-center gap-1.5">
                                 <Calendar size={16} />
-                                Safra {new Date(lot.plantingDate).getFullYear()}
+                                Colheita {new Date(lot.harvestDate).getFullYear()}
                             </span>
                         </div>
                     </div>
@@ -131,7 +131,7 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                     <div className="bg-gradient-to-br from-primary-800 to-primary-900 rounded-2xl p-8 shadow-xl text-white">
                         <h2 className="text-2xl font-bold mb-4">Our Commitment</h2>
                         <p className="text-primary-100 leading-relaxed mb-4">
-                            We bring transparency to every step of our production process. From planting to harvest,
+                            We bring transparency to every step of our production process. From production to harvest,
                             every stage is documented and verified to ensure the highest quality and sustainability standards.
                         </p>
                         <p className="text-primary-200 text-sm">

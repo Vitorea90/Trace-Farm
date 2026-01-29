@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CheckCircle2, Truck, Sprout, Factory, ClipboardList } from "lucide-react";
+import { CheckCircle2, Truck, Sprout, Factory, ClipboardList, ShoppingCart } from "lucide-react";
 
 const icons = {
     PLANTING: Sprout,
@@ -11,6 +11,7 @@ const icons = {
     HARVEST: CheckCircle2,
     TRANSPORT: Truck,
     PROCESSING: Factory,
+    SOLD: ShoppingCart,
 };
 
 type EventType = keyof typeof icons;
