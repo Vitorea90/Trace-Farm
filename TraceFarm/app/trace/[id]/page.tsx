@@ -3,12 +3,13 @@ import { Timeline } from "@/components/ui/timeline";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import { Leaf, Award, MapPin, Calendar, Sprout, User, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
 export default async function TracePage({ params }: { params: { id: string } }) {
     const lot = await prisma.lot.findUnique({
-        where: { id: params.id },
+        where: { code: params.id },
         include: {
             events: { orderBy: { date: 'desc' } },
             producers: true
@@ -79,11 +80,15 @@ export default async function TracePage({ params }: { params: { id: string } }) 
 
                     <div className="space-y-4">
                         {lot.producers.map(producer => (
-                            <div key={producer.id} className="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-lg border border-zinc-100 dark:border-zinc-800">
+                            <Link
+                                key={producer.id}
+                                href={`/producer/${producer.id}`}
+                                className="block bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-lg border border-zinc-100 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all hover:shadow-xl group"
+                            >
                                 {/* Farm Image */}
-                                <div className="h-40 bg-zinc-200 dark:bg-zinc-800 w-full relative">
+                                <div className="h-40 bg-zinc-200 dark:bg-zinc-800 w-full relative overflow-hidden">
                                     {producer.farmImage ? (
-                                        <img src={producer.farmImage} className="w-full h-full object-cover" alt="Farm" />
+                                        <img src={producer.farmImage} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Farm" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-primary-50 dark:bg-primary-950 text-primary-300">
                                             <Sprout size={56} />
@@ -97,16 +102,23 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                                     )}
                                 </div>
 
-                                <div className="p-5 flex items-center gap-4">
-                                    <div className="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 text-xl font-bold shrink-0">
-                                        {producer.name ? producer.name[0].toUpperCase() : 'P'}
+                                <div className="p-5 flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 text-xl font-bold shrink-0">
+                                            {producer.name ? producer.name[0].toUpperCase() : 'P'}
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{producer.name || 'Producer'}</h3>
+                                            <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">{producer.farmName}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{producer.name || 'Producer'}</h3>
-                                        <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">{producer.farmName}</p>
+
+                                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold text-sm group-hover:gap-3 transition-all">
+                                        Ver Perfil
+                                        <User size={18} />
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </section>

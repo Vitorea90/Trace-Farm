@@ -31,7 +31,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
                 farmName: data.farmName,
                 farmLatitude: data.farmLatitude,
                 farmLongitude: data.farmLongitude,
-                farmImage: data.farmImage
+                farmImage: data.farmImage,
+                farmImages: data.farmImages,
+                profileImage: data.profileImage,
+                bio: data.bio,
+                phone: data.phone,
+                certifications: data.certifications,
+                website: data.website
             }
         });
 

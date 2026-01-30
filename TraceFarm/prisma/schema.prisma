@@ -17,8 +17,16 @@ model User {
   farmName      String?
   farmLatitude  Float?
   farmLongitude Float?
-  farmImage     String? // URL to image
-
+  farmImage     String? // URL to primary image (kept for backward compatibility)
+  farmImages    String? // JSON array of image URLs for gallery (max 6)
+  
+  // Producer Information
+  profileImage  String? // Producer's profile photo/avatar
+  bio           String? // Producer's story/description
+  phone         String? // Contact phone
+  certifications String? // Comma-separated certifications
+  website       String? // Producer's website
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   

@@ -16,7 +16,20 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, email, farmName, farmLatitude, farmLongitude, farmImage } = body;
+        const {
+            name,
+            email,
+            farmName,
+            farmLatitude,
+            farmLongitude,
+            farmImage,
+            farmImages,
+            profileImage,
+            bio,
+            phone,
+            certifications,
+            website
+        } = body;
 
         const producer = await prisma.user.create({
             data: {
@@ -26,7 +39,13 @@ export async function POST(request: Request) {
                 farmName,
                 farmLatitude: parseFloat(farmLatitude),
                 farmLongitude: parseFloat(farmLongitude),
-                farmImage
+                farmImage,
+                farmImages,
+                profileImage,
+                bio,
+                phone,
+                certifications,
+                website
             }
         });
 
