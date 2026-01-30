@@ -146,8 +146,16 @@ export default async function TracePage({ params }: { params: { id: string } }) 
 
                                 <div className="p-5 flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-4">
-                                        <div className="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 text-xl font-bold shrink-0">
-                                            {producer.name ? producer.name[0].toUpperCase() : 'P'}
+                                        <div className="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 text-xl font-bold shrink-0 overflow-hidden">
+                                            {producer.profileImage ? (
+                                                <img
+                                                    src={producer.profileImage}
+                                                    alt={producer.name || 'Produtor'}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <span>{producer.name ? producer.name[0].toUpperCase() : 'P'}</span>
+                                            )}
                                         </div>
                                         <div>
                                             <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{producer.name || 'Producer'}</h3>
