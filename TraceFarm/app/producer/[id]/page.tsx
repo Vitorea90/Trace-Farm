@@ -2,8 +2,15 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { MapPin, Phone, Globe, Award, Leaf, Package, Calendar } from "lucide-react";
 import Link from "next/link";
+import dynamic from 'next/dynamic';
 
-export const dynamic = 'force-dynamic';
+const MapView = dynamic(() => import('@/components/ui/map-view'), {
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full bg-zinc-100 animate-pulse rounded-lg" />
+});
+
+export const dynamicParams = true;
+export const revalidate = 0;
 
 export default async function ProducerProfilePage({ params }: { params: { id: string } }) {
     const producer = await prisma.user.findUnique({
@@ -33,6 +40,18 @@ export default async function ProducerProfilePage({ params }: { params: { id: st
     // If no gallery images, use the primary image
     if (farmImages.length === 0 && producer.farmImage) {
         farmImages = [producer.farmImage];
+    }
+
+    // Prepare location data for map
+    const locations = [];
+    if (producer.farmLatitude && producer.farmLongitude) {
+        locations.push({
+            lat: producer.farmLatitude,
+            lng: producer.farmLongitude,
+            label: producer.farmName || 'Fazenda',
+            description: 'Localização da propriedade',
+            type: 'farm' as const
+        });
     }
 
     return (
@@ -101,6 +120,18 @@ export default async function ProducerProfilePage({ params }: { params: { id: st
                                 </div>
                             </section>
                         )}
+
+                        {/* Farm Location Map */}
+                        {locations.length > 0 && (
+                            <section className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800">
+                                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-2">
+                                    <MapPin className="text-emerald-600" size={24} />
+                                    Localização
+                                </h2>
+                                <MapView locations={locations} height="400px" />
+                            </section>
+                        )}
+
 
                         {/* Lots Produced */}
                         <section className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800">
@@ -186,19 +217,6 @@ export default async function ProducerProfilePage({ params }: { params: { id: st
                                     </div>
                                 )}
 
-                                {(producer.farmLatitude && producer.farmLongitude) && (
-                                    <div className="flex items-start gap-3">
-                                        <div className="h-10 w-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
-                                            <MapPin className="text-emerald-600 dark:text-emerald-400" size={18} />
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-1">Localização</p>
-                                            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                                                {producer.farmLatitude.toFixed(4)}, {producer.farmLongitude.toFixed(4)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                         </div>
 

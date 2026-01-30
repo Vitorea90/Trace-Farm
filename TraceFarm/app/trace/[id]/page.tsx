@@ -4,8 +4,15 @@ import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import { Leaf, Award, MapPin, Calendar, Sprout, User, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import dynamic from 'next/dynamic';
 
-export const dynamic = 'force-dynamic';
+const MapView = dynamic(() => import('@/components/ui/map-view'), {
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full bg-zinc-100 animate-pulse rounded-lg" />
+});
+
+export const dynamicParams = true;
+export const revalidate = 0;
 
 export default async function TracePage({ params }: { params: { id: string } }) {
     const lot = await prisma.lot.findUnique({
@@ -20,6 +27,47 @@ export default async function TracePage({ params }: { params: { id: string } }) 
         notFound();
     }
 
+    // Prepare location data for map
+    const locations = [];
+
+    // Add lot location if available
+    if (lot.latitude && lot.longitude) {
+        locations.push({
+            lat: lot.latitude,
+            lng: lot.longitude,
+            label: 'Local do Lote',
+            description: lot.locationname || 'Localização da produção',
+            type: 'lot' as const
+        });
+    }
+
+    // Add farm locations from producers
+    for (const producer of lot.producers) {
+        if (producer.farmLatitude && producer.farmLongitude) {
+            locations.push({
+                lat: producer.farmLatitude,
+                lng: producer.farmLongitude,
+                label: producer.farmName || 'Fazenda',
+                description: `Propriedade de ${producer.name}`,
+                type: 'farm' as const
+            });
+        }
+    }
+
+    // If lot has no location, use first producer's farm location as fallback
+    if (locations.length === 0 && lot.producers.length > 0) {
+        const firstProducer = lot.producers[0];
+        if (firstProducer.farmLatitude && firstProducer.farmLongitude) {
+            locations.push({
+                lat: firstProducer.farmLatitude,
+                lng: firstProducer.farmLongitude,
+                label: firstProducer.farmName || 'Fazenda',
+                description: 'Localização da fazenda produtora',
+                type: 'farm' as const
+            });
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-950 dark:to-zinc-900">
             {/* Hero Image Section */}
@@ -31,16 +79,16 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                     <div className="max-w-2xl mx-auto">
                         <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{lot.cropType}</h1>
                         <div className="flex flex-wrap items-center gap-4 text-primary-100 text-sm">
-                            {lot.latitude && (
-                                <span className="flex items-center gap-1.5">
-                                    <MapPin size={16} />
-                                    {lot.latitude.toFixed(4)}, {lot.longitude?.toFixed(4)}
-                                </span>
-                            )}
                             <span className="flex items-center gap-1.5">
                                 <Calendar size={16} />
                                 Colheita {new Date(lot.harvestDate).getFullYear()}
                             </span>
+                            {lot.locationname && (
+                                <span className="flex items-center gap-1.5">
+                                    <MapPin size={16} />
+                                    {lot.locationname}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -94,12 +142,6 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                                             <Sprout size={56} />
                                         </div>
                                     )}
-                                    {producer.farmLatitude && (
-                                        <div className="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-lg backdrop-blur-md flex items-center gap-1.5">
-                                            <MapPin size={12} />
-                                            {producer.farmLatitude.toFixed(4)}, {producer.farmLongitude?.toFixed(4)}
-                                        </div>
-                                    )}
                                 </div>
 
                                 <div className="p-5 flex items-center justify-between gap-4">
@@ -122,6 +164,20 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                         ))}
                     </div>
                 </section>
+
+                {/* Location Map */}
+                {locations.length > 0 && (
+                    <section className="mb-8">
+                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-2">
+                            <MapPin className="text-emerald-600" size={24} />
+                            Localização
+                        </h2>
+                        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-800">
+                            <MapView locations={locations} height="450px" />
+                        </div>
+                    </section>
+                )}
+
 
                 {/* Certifications - from lot data */}
                 {lot.certifications && (
