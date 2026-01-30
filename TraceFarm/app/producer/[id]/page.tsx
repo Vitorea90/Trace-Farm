@@ -63,7 +63,7 @@ export default async function ProducerProfilePage({ params }: { params: { id: st
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                     <div className="max-w-5xl mx-auto">
-                        <div className="flex items-end gap-6">
+                        <div className="flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-6">
                             {/* Producer Avatar */}
                             <div className="h-32 w-32 rounded-2xl bg-white dark:bg-zinc-800 border-4 border-white dark:border-zinc-700 shadow-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-5xl font-bold shrink-0 overflow-hidden">
                                 {producer.profileImage ? (
@@ -77,11 +77,11 @@ export default async function ProducerProfilePage({ params }: { params: { id: st
                                 )}
                             </div>
 
-                            <div className="pb-4">
-                                <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+                            <div className="pb-4 text-center md:text-left">
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
                                     {producer.name || 'Produtor'}
                                 </h1>
-                                <p className="text-xl text-emerald-100 font-medium">
+                                <p className="text-lg md:text-xl text-emerald-100 font-medium">
                                     {producer.farmName || 'Fazenda'}
                                 </p>
                             </div>
