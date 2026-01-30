@@ -91,7 +91,7 @@ export default async function ProducerProfilePage({ params }: { params: { id: st
             </div>
 
             {/* Main Content */}
-            <div className="max-w-5xl mx-auto px-6 pb-16 -mt-8 relative z-10">
+            <div className="max-w-5xl mx-auto px-6 py-8 relative z-10">
                 <div className="grid md:grid-cols-3 gap-8">
                     {/* Left Column - Main Info */}
                     <div className="md:col-span-2 space-y-8">

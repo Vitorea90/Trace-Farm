@@ -19,6 +19,15 @@ export default async function LotDetailPage({ params }: { params: { id: string }
         notFound();
     }
 
+    // Calcular progresso baseado nas datas
+    const plantingDate = new Date(lot.plantingDate);
+    const harvestDate = new Date(lot.harvestDate);
+    const today = new Date();
+
+    const totalDays = Math.max(1, Math.floor((harvestDate.getTime() - plantingDate.getTime()) / (1000 * 60 * 60 * 24)));
+    const daysPassed = Math.floor((today.getTime() - plantingDate.getTime()) / (1000 * 60 * 60 * 24));
+    const progressPercentage = Math.min(100, Math.max(0, Math.floor((daysPassed / totalDays) * 100)));
+
     return (
         <div className="space-y-8 max-w-5xl mx-auto">
             {/* Header */}
@@ -56,22 +65,14 @@ export default async function LotDetailPage({ params }: { params: { id: string }
                     <Card>
                         <CardContent className="pt-6">
                             <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-4">Status Atual</h3>
-                            <div className="text-2xl font-bold text-primary-600 mb-2">
-                                {lot.status === 'ACTIVE' ? 'Em Cultivo' : lot.status}
+                            <div className="text-2xl font-bold text-emerald-600 mb-2">
+                                {lot.status === 'ACTIVE' ? 'Disponível' : lot.status === 'SOLD' ? 'Vendido' : lot.status}
                             </div>
-                            <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-primary-500 w-[60%] rounded-full" />
-                            </div>
-                            <p className="text-xs text-zinc-400 mt-2">Progresso estimado até a colheita</p>
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                                {lot.status === 'ACTIVE' ? 'Lote cadastrado e disponível para venda' : 'Status do lote'}
+                            </p>
                         </CardContent>
                     </Card>
-
-                    <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-xl">
-                        <h4 className="text-amber-800 dark:text-amber-200 font-semibold mb-1">Nota do Técnico</h4>
-                        <p className="text-sm text-amber-900/80 dark:text-amber-100/70">
-                            Próxima vistoria agendada para semana que vem. Verificar irrigação.
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>

@@ -2,8 +2,50 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sprout, AlertCircle, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import prisma from "@/lib/prisma";
 
-export default function DashboardPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function DashboardPage() {
+    // Buscar dados reais do banco
+    const totalLots = await prisma.lot.count();
+
+    // Contar produtores (usuários com fazenda cadastrada)
+    const totalProducers = await prisma.user.count({
+        where: {
+            farmName: {
+                not: null
+            }
+        }
+    });
+
+    // Contar lotes cadastrados esta semana
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const lotsThisWeek = await prisma.lot.count({
+        where: {
+            createdAt: {
+                gte: oneWeekAgo
+            }
+        }
+    });
+
+    // Contar produtores cadastrados este mês
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const producersThisMonth = await prisma.user.count({
+        where: {
+            farmName: {
+                not: null
+            },
+            createdAt: {
+                gte: oneMonthAgo
+            }
+        }
+    });
+
     return (
         <div className="space-y-8">
             <div>
@@ -14,22 +56,26 @@ export default function DashboardPage() {
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">Lotes Ativos</CardTitle>
+                        <CardTitle className="text-sm font-medium">Lotes Cadastrados</CardTitle>
                         <Sprout className="h-4 w-4 text-primary-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">12</div>
-                        <p className="text-xs text-muted-foreground">+2 iniciados esta semana</p>
+                        <div className="text-2xl font-bold">{totalLots}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {lotsThisWeek > 0 ? `+${lotsThisWeek} cadastrados esta semana` : 'Nenhum novo esta semana'}
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">Próximas Colheitas</CardTitle>
+                        <CardTitle className="text-sm font-medium">Produtores Cadastrados</CardTitle>
                         <TrendingUp className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">3</div>
-                        <p className="text-xs text-muted-foreground">Lotes #A12, #B04, #C01</p>
+                        <div className="text-2xl font-bold">{totalProducers}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {producersThisMonth > 0 ? `+${producersThisMonth} cadastrado este mês` : 'Nenhum novo este mês'}
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
