@@ -65,8 +65,16 @@ export default async function ProducerProfilePage({ params }: { params: { id: st
                     <div className="max-w-5xl mx-auto">
                         <div className="flex items-end gap-6">
                             {/* Producer Avatar */}
-                            <div className="h-32 w-32 rounded-2xl bg-white dark:bg-zinc-800 border-4 border-white dark:border-zinc-700 shadow-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-5xl font-bold shrink-0">
-                                {producer.name ? producer.name[0].toUpperCase() : 'P'}
+                            <div className="h-32 w-32 rounded-2xl bg-white dark:bg-zinc-800 border-4 border-white dark:border-zinc-700 shadow-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-5xl font-bold shrink-0 overflow-hidden">
+                                {producer.profileImage ? (
+                                    <img
+                                        src={producer.profileImage}
+                                        alt={producer.name || 'Produtor'}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span>{producer.name ? producer.name[0].toUpperCase() : 'P'}</span>
+                                )}
                             </div>
 
                             <div className="pb-4">
