@@ -6,15 +6,22 @@ import { LogIn, Leaf } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const router = useRouter();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Mock authentication - just check if fields are not empty
-        if (email.trim() && password.trim()) {
+        setError("");
+
+        if (username === "cofamel" && password === "cofamel2025") {
+            // Set simple auth cookie
+            document.cookie = "auth_token=true; path=/; max-age=86400; SameSite=Strict";
             router.push("/dashboard");
+            router.refresh();
+        } else {
+            setError("Usuário ou senha incorretos.");
         }
     };
 
@@ -26,25 +33,30 @@ export default function LoginPage() {
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-600 mb-4">
                         <Leaf className="text-white" size={32} />
                     </div>
-                    <h1 className="text-3xl font-bold text-white mb-2">AgroTrace</h1>
+                    <h1 className="text-3xl font-bold text-white mb-2">TraceFarm</h1>
                     <p className="text-primary-100">Acesso Produtor</p>
                 </div>
 
                 {/* Login Form */}
                 <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {error && (
+                            <div className="p-3 text-sm text-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-900">
+                                {error}
+                            </div>
+                        )}
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                                Email
+                            <label htmlFor="username" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                                Usuário
                             </label>
                             <input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                id="username"
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 required
                                 className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
-                                placeholder="seu@email.com"
+                                placeholder="Digite seu usuário"
                             />
                         </div>
 

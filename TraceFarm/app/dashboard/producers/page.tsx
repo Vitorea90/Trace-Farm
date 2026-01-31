@@ -18,7 +18,7 @@ export default async function ProducersPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Produtores & Fazendas</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Produtores & Fazendas</h1>
                     <p className="text-zinc-500">Gerencie os produtores parceiros e suas localizações.</p>
                 </div>
                 <Link href="/dashboard/producers/new">
@@ -29,15 +29,19 @@ export default async function ProducersPage() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {producers.map((producer) => (
                     <Card key={producer.id} className="group hover:shadow-lg transition-all relative">
-                        <CardHeader className="pb-3 flex flex-row gap-4 items-start justify-between">
+                        <CardHeader className="space-y-0 p-4 flex flex-row gap-4 items-center justify-between">
                             <div className="flex gap-4 items-center">
-                                {producer.farmImage && (
-                                    <div className="h-12 w-12 rounded-full bg-zinc-100 overflow-hidden shrink-0">
+                                {/* Prioritize Profile Image, fallback to Farm Image, then Initial */}
+                                {producer.profileImage ? (
+                                    <div className="h-12 w-12 rounded-full bg-zinc-100 overflow-hidden shrink-0 border border-zinc-200">
+                                        <img src={producer.profileImage} alt={producer.name || 'Producer'} className="h-full w-full object-cover" />
+                                    </div>
+                                ) : producer.farmImage ? (
+                                    <div className="h-12 w-12 rounded-full bg-zinc-100 overflow-hidden shrink-0 border border-zinc-200">
                                         <img src={producer.farmImage} alt="Farm" className="h-full w-full object-cover" />
                                     </div>
-                                )}
-                                {!producer.farmImage && (
-                                    <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold shrink-0">
+                                ) : (
+                                    <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold shrink-0 border border-green-200">
                                         {producer.name ? producer.name[0] : 'P'}
                                     </div>
                                 )}

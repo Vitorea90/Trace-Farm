@@ -49,7 +49,7 @@ export default async function DashboardPage() {
     return (
         <div className="space-y-8">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Bem-vindo, Produtor</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-foreground">Bem-vindo, Produtor</h2>
                 <p className="text-zinc-500 dark:text-zinc-400">Aqui está o resumo da sua produção hoje.</p>
             </div>
 

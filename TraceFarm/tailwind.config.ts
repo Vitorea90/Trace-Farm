@@ -1,6 +1,8 @@
 import type { Config } from "tailwindcss";
 
+
 const config: Config = {
+    darkMode: "class",
     content: [
         "./pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,6 +12,14 @@ const config: Config = {
         extend: {
             colors: {
                 // Agricultural/Modern palette
+                background: "rgb(var(--background-end-rgb))",
+                foreground: "rgb(var(--foreground-rgb))",
+                card: "rgb(var(--card-rgb))",
+                "card-foreground": "rgb(var(--card-foreground-rgb))",
+                border: "rgb(var(--border-rgb))",
+                input: "rgb(var(--input-rgb))",
+                ring: "rgb(var(--ring-rgb))",
+                "muted-foreground": "rgb(var(--muted-foreground-rgb))",
                 primary: {
                     50: '#f0fdf4',
                     100: '#dcfce7',

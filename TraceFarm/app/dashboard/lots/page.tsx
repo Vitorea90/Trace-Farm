@@ -19,7 +19,7 @@ export default async function LotsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Meus Lotes</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Meus Lotes</h1>
                     <p className="text-zinc-500">Gerencie sua produção e acompanhe o progresso.</p>
                 </div>
                 <Link href="/dashboard/lots/new">
