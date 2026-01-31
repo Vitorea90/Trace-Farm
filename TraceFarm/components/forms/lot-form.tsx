@@ -27,13 +27,30 @@ const CERTIFICATIONS = [
     { value: 'Non-GMO', label: 'Não-OGM' },
 ];
 
-export function LotForm() {
+interface LotFormProps {
+    initialData?: any;
+    isEdit?: boolean;
+}
+
+export function LotForm({ initialData, isEdit = false }: LotFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [producers, setProducers] = useState<Producer[]>([]);
-    const [coords, setCoords] = useState<{ lat: number, lng: number } | null>(null);
-    const [selectedCerts, setSelectedCerts] = useState<string[]>([]);
-    const [selectedProducerId, setSelectedProducerId] = useState<string>('');
+
+    // Initialize state (careful with nulls)
+    const [coords, setCoords] = useState<{ lat: number, lng: number } | null>(
+        initialData?.latitude && initialData?.longitude
+            ? { lat: initialData.latitude, lng: initialData.longitude }
+            : null
+    );
+    const [selectedCerts, setSelectedCerts] = useState<string[]>(
+        initialData?.certifications ? initialData.certifications.split(',') : []
+    );
+    const [selectedProducerId, setSelectedProducerId] = useState<string>(
+        initialData?.producers && initialData.producers.length > 0
+            ? initialData.producers[0].id
+            : ''
+    );
 
     // Fetch producers
     useEffect(() => {
@@ -83,8 +100,11 @@ export function LotForm() {
         };
 
         try {
-            const res = await fetch('/api/lots', {
-                method: 'POST',
+            const url = isEdit ? `/api/lots/${initialData.id}` : '/api/lots';
+            const method = isEdit ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
                 body: JSON.stringify(data),
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -141,7 +161,7 @@ export function LotForm() {
                                 <label className="text-sm font-medium text-zinc-700">Unidade</label>
                                 <select
                                     name="unit"
-                                    defaultValue="KG"
+                                    defaultValue={initialData?.unit || "KG"}
                                     className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                                     required
                                 >
@@ -155,6 +175,7 @@ export function LotForm() {
                                     name="quantity"
                                     type="number"
                                     step="0.01"
+                                    defaultValue={initialData?.area || ''}
                                     placeholder="Ex: 150"
                                     required
                                     className="focus:ring-2 focus:ring-primary-500"
@@ -176,6 +197,7 @@ export function LotForm() {
                                 <Input
                                     name="harvestDate"
                                     type="date"
+                                    defaultValue={initialData?.harvestDate ? new Date(initialData.harvestDate).toISOString().split('T')[0] : ''}
                                     max={new Date().toISOString().split("T")[0]}
                                     required
                                     className="focus:ring-2 focus:ring-primary-500"
@@ -206,7 +228,7 @@ export function LotForm() {
                             <label className="text-sm font-medium text-zinc-700">Classificação</label>
                             <select
                                 name="quality"
-                                defaultValue=""
+                                defaultValue={initialData?.quality || ""}
                                 className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                             >
                                 <option value="">Não classificado</option>
@@ -229,6 +251,7 @@ export function LotForm() {
                             <Input
                                 name="storageLocation"
                                 type="text"
+                                defaultValue={initialData?.storageLocation || ""}
                                 placeholder="Ex: Galpão 2, Sala de Estoque, Casa de Mel"
                                 className="focus:ring-2 focus:ring-primary-500"
                             />

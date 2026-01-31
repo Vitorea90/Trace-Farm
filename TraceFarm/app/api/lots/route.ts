@@ -13,7 +13,7 @@ export async function GET() {
         let where: any = {};
 
         // If not Admin, filter by Creator (Cooperative)
-        if (role !== 'ADMIN' && userId) {
+        if (role !== 'admin' && userId) {
             where.createdById = userId;
         }
 

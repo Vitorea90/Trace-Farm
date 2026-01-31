@@ -33,6 +33,7 @@ export default function LoginPage() {
                 // 'coop' is the manager role now
                 const roleCookie = data.user.role === 'ADMIN' ? 'admin' : 'coop';
                 document.cookie = `auth_role=${roleCookie}; path=/; max-age=86400; SameSite=Strict${secure}`;
+                document.cookie = `auth_user=${data.user.id}; path=/; max-age=86400; SameSite=Strict${secure}`;
 
                 if (data.user.role === "ADMIN") {
                     router.push("/admin");

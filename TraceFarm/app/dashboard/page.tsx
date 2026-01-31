@@ -13,7 +13,7 @@ export default async function DashboardPage() {
     const role = cookieStore.get('auth_role')?.value;
 
     // Filter logic: Admins see all, Cooperatives see their own
-    const isFilter = role !== 'ADMIN' && userId;
+    const isFilter = role !== 'admin' && userId;
     const baseFilter = isFilter ? { createdById: userId } : {};
 
     // 1. Total Lots

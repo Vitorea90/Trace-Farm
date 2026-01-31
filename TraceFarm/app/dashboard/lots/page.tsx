@@ -9,8 +9,22 @@ import { ActionButtons } from "@/components/ui/action-buttons";
 
 export const dynamic = 'force-dynamic';
 
+import { cookies } from 'next/headers';
+
 export default async function LotsPage() {
+    const cookieStore = cookies();
+    const userId = cookieStore.get('auth_user')?.value;
+    const role = cookieStore.get('auth_role')?.value;
+
+    const where: any = {};
+
+    // If not Admin, filter by Creator (Cooperative)
+    if (role !== 'admin' && userId) {
+        where.createdById = userId;
+    }
+
     const lots = await prisma.lot.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         include: { _count: { select: { events: true } } }
     });

@@ -7,9 +7,22 @@ import { MapPin, User, ArrowRight } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
+import { cookies } from 'next/headers';
+
 export default async function ProducersPage() {
+    const cookieStore = cookies();
+    const userId = cookieStore.get('auth_user')?.value;
+    const role = cookieStore.get('auth_role')?.value;
+
+    const where: any = { role: 'PRODUCER' };
+
+    // If not Admin, filter by Creator (Cooperative)
+    if (role !== 'admin' && userId) {
+        where.createdById = userId;
+    }
+
     const producers = await prisma.user.findMany({
-        where: { role: 'PRODUCER' },
+        where,
         orderBy: { createdAt: 'desc' },
         include: { _count: { select: { lots: true } } }
     });
