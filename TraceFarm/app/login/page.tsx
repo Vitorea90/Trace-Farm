@@ -11,17 +11,41 @@ export default function LoginPage() {
     const [error, setError] = useState("");
     const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
 
-        if (username === "cofamel" && password === "cofamel2025") {
-            // Set simple auth cookie
-            document.cookie = "auth_token=true; path=/; max-age=86400; SameSite=Strict";
-            router.push("/dashboard");
-            router.refresh();
-        } else {
-            setError("Usuário ou senha incorretos.");
+        try {
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                // Set cookies based on role
+                const isProd = process.env.NODE_ENV === "production";
+                const secure = isProd ? "; Secure" : "";
+
+                document.cookie = `auth_token=true; path=/; max-age=86400; SameSite=Strict${secure}`;
+                // 'coop' is the manager role now
+                const roleCookie = data.user.role === 'ADMIN' ? 'admin' : 'coop';
+                document.cookie = `auth_role=${roleCookie}; path=/; max-age=86400; SameSite=Strict${secure}`;
+
+                if (data.user.role === "ADMIN") {
+                    router.push("/admin");
+                } else {
+                    router.push("/dashboard");
+                }
+                router.refresh();
+            } else {
+                setError(data.error || "Erro ao fazer login");
+            }
+        } catch (err) {
+            setError("Erro de conexão. Tente novamente.");
+            console.error(err);
         }
     };
 
@@ -34,7 +58,7 @@ export default function LoginPage() {
                         <Leaf className="text-white" size={32} />
                     </div>
                     <h1 className="text-3xl font-bold text-white mb-2">TraceFarm</h1>
-                    <p className="text-primary-100">Acesso Produtor</p>
+                    <p className="text-primary-100">Acesso Produtor/Cooperativa</p>
                 </div>
 
                 {/* Login Form */}

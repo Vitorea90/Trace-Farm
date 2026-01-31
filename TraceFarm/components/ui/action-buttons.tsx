@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 interface ActionButtonsProps {
     id: string;
-    type: 'producers' | 'lots';
+    type: 'producers' | 'lots' | 'users';
 }
 
 export function ActionButtons({ id, type }: ActionButtonsProps) {
@@ -43,7 +43,7 @@ export function ActionButtons({ id, type }: ActionButtonsProps) {
 
     return (
         <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-            <Link href={`/dashboard/${type}/${id}/edit`}>
+            <Link href={type === 'users' ? `/admin/users/${id}/edit` : `/dashboard/${type}/${id}/edit`}>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-blue-600 hover:bg-blue-50">
                     <Edit size={16} />
                 </Button>

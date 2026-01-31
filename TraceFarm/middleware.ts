@@ -5,11 +5,21 @@ export function middleware(request: NextRequest) {
 
     // Check if it's a dashboard route
     if (request.nextUrl.pathname.startsWith('/dashboard')) {
-        // Check for auth token
         const token = request.cookies.get('auth_token')
+        const role = request.cookies.get('auth_role')
 
-        if (!token) {
-            // Redirect to login if no token found
+        // Allow 'coop' (and legacy 'producer' if any) to view dashboard
+        if (!token || (role?.value !== 'coop' && role?.value !== 'producer' && role?.value !== 'admin')) {
+            return NextResponse.redirect(new URL('/login', request.url))
+        }
+    }
+
+    // Check if it's an admin route
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+        const token = request.cookies.get('auth_token')
+        const role = request.cookies.get('auth_role')
+
+        if (!token || role?.value !== 'admin') {
             return NextResponse.redirect(new URL('/login', request.url))
         }
     }
@@ -18,5 +28,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: '/dashboard/:path*',
+    matcher: ['/dashboard/:path*', '/admin/:path*'],
 }

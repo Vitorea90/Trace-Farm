@@ -9,9 +9,16 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
+  username  String?  @unique
+  password  String?  // Storing plain text as implicit requirement for now, ideally hashed
   email     String   @unique
   name      String?
-  role      String   @default("PRODUCER")
+  role      String   @default("PRODUCER") // ADMIN, COOP, PRODUCER
+
+  // Hierarchy
+  createdById String?
+  createdBy   User?   @relation("UserHierarchy", fields: [createdById], references: [id], onDelete: Cascade)
+  createdUsers User[] @relation("UserHierarchy")
   
   // Farm Details
   farmName      String?
@@ -37,6 +44,9 @@ model User {
 model Lot {
   id                   String   @id @default(uuid())
   code                 String   @unique
+  
+  createdById          String?  // Link to the Cooperative (User)
+
   
   // Producers (Many-to-Many)
   producers            User[]

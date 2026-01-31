@@ -3,54 +3,62 @@ import { Sprout, AlertCircle, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
-    // Buscar dados reais do banco
-    const totalLots = await prisma.lot.count();
+    const cookieStore = cookies();
+    const userId = cookieStore.get('auth_user')?.value;
+    const role = cookieStore.get('auth_role')?.value;
 
-    // Contar produtores (usuários com fazenda cadastrada)
+    // Filter logic: Admins see all, Cooperatives see their own
+    const isFilter = role !== 'ADMIN' && userId;
+    const baseFilter = isFilter ? { createdById: userId } : {};
+
+    // 1. Total Lots
+    const totalLots = await prisma.lot.count({
+        where: baseFilter
+    });
+
+    // 2. Total Producers
     const totalProducers = await prisma.user.count({
         where: {
-            farmName: {
-                not: null
-            }
+            role: 'PRODUCER',
+            ...baseFilter
         }
     });
 
-    // Contar lotes cadastrados esta semana
+    // 3. Lots This Week
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     const lotsThisWeek = await prisma.lot.count({
         where: {
-            createdAt: {
-                gte: oneWeekAgo
-            }
+            ...baseFilter,
+            createdAt: { gte: oneWeekAgo }
         }
     });
 
-    // Contar produtores cadastrados este mês
+    // 4. Producers This Month
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
     const producersThisMonth = await prisma.user.count({
         where: {
-            farmName: {
-                not: null
-            },
-            createdAt: {
-                gte: oneMonthAgo
-            }
+            role: 'PRODUCER',
+            ...baseFilter,
+            createdAt: { gte: oneMonthAgo }
         }
     });
 
     return (
         <div className="space-y-8">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight text-foreground">Bem-vindo, Produtor</h2>
-                <p className="text-zinc-500 dark:text-zinc-400">Aqui está o resumo da sua produção hoje.</p>
+                <h2 className="text-3xl font-bold tracking-tight text-foreground">
+                    {role === 'ADMIN' ? 'Visão Geral (Admin)' : 'Sua Cooperativa'}
+                </h2>
+                <p className="text-zinc-500 dark:text-zinc-400">Resumo da produção cadastrada.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
@@ -62,7 +70,7 @@ export default async function DashboardPage() {
                     <CardContent>
                         <div className="text-2xl font-bold">{totalLots}</div>
                         <p className="text-xs text-muted-foreground">
-                            {lotsThisWeek > 0 ? `+${lotsThisWeek} cadastrados esta semana` : 'Nenhum novo esta semana'}
+                            {lotsThisWeek > 0 ? `+${lotsThisWeek} esta semana` : 'Nenhum novo esta semana'}
                         </p>
                     </CardContent>
                 </Card>
@@ -74,7 +82,7 @@ export default async function DashboardPage() {
                     <CardContent>
                         <div className="text-2xl font-bold">{totalProducers}</div>
                         <p className="text-xs text-muted-foreground">
-                            {producersThisMonth > 0 ? `+${producersThisMonth} cadastrado este mês` : 'Nenhum novo este mês'}
+                            {producersThisMonth > 0 ? `+${producersThisMonth} este mês` : 'Nenhum novo este mês'}
                         </p>
                     </CardContent>
                 </Card>

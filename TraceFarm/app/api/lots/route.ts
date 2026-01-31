@@ -1,11 +1,24 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { cookies } from 'next/headers';
 
 const prisma = new PrismaClient();
 
 export async function GET() {
     try {
+        const cookieStore = cookies();
+        const userId = cookieStore.get('auth_user')?.value;
+        const role = cookieStore.get('auth_role')?.value;
+
+        let where: any = {};
+
+        // If not Admin, filter by Creator (Cooperative)
+        if (role !== 'ADMIN' && userId) {
+            where.createdById = userId;
+        }
+
         const lots = await prisma.lot.findMany({
+            where,
             orderBy: { createdAt: 'desc' },
             include: {
                 _count: { select: { events: true } },
@@ -20,8 +33,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
+        const cookieStore = cookies();
+        const userId = cookieStore.get('auth_user')?.value; // Current Coop ID
+
         const body = await request.json();
-        console.log("Received Lot Data:", body); // Debug log
+        console.log("Received Lot Data:", body);
 
         const {
             cropType,
@@ -35,43 +51,31 @@ export async function POST(request: Request) {
             quality,
             certifications,
             storageLocation,
-            producerIds = [] // Default to empty array
+            producerIds = []
         } = body;
 
-        // --- Validation & Parsing ---
-
-        // 1. Area (Required Float)
+        // --- Validation ---
         const areaFloat = parseFloat(area);
         if (!area || isNaN(areaFloat)) {
             return NextResponse.json({ error: 'Área inválida. Informe um número.' }, { status: 400 });
         }
 
-        // 2. Dates (Required Date)
-        const pDate = new Date(plantingDate);
-        const hDate = new Date(harvestDate);
-        if (isNaN(pDate.getTime()) || isNaN(hDate.getTime())) {
-            return NextResponse.json({ error: 'Datas de plantio ou colheita inválidas.' }, { status: 400 });
-        }
-
-        // 3. Optional Floats
         const latFloat = latitude ? parseFloat(latitude) : null;
         const lngFloat = longitude ? parseFloat(longitude) : null;
         const weightFloat = harvestWeight ? parseFloat(harvestWeight) : null;
 
-        // Generate unique code
         const code = `LOT-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}-${new Date().getFullYear()}`;
 
-        // Construct data object
-        // Cast to 'any' to bypass potential Prisma Client mismatch if types are stale
         const createData: any = {
             code,
-            cropType: cropType || 'Mel', // Default fallback
+            createdById: userId, // Link to creating Coop
+            cropType: cropType || 'Mel',
             latitude: (latFloat !== null && !isNaN(latFloat)) ? latFloat : null,
             longitude: (lngFloat !== null && !isNaN(lngFloat)) ? lngFloat : null,
             area: areaFloat,
             unit: unit || 'KG',
-            plantingDate: pDate,
-            harvestDate: hDate,
+            plantingDate: new Date(plantingDate),
+            harvestDate: new Date(harvestDate),
             harvestWeight: (weightFloat !== null && !isNaN(weightFloat)) ? weightFloat : null,
             quality: quality || null,
             certifications: certifications || null,
@@ -86,7 +90,7 @@ export async function POST(request: Request) {
             data: createData
         });
 
-        // Create automatic timeline events for production start and harvest
+        // Events
         await prisma.event.createMany({
             data: [
                 {
@@ -94,7 +98,7 @@ export async function POST(request: Request) {
                     type: 'PLANTING',
                     title: 'Início da Produção',
                     description: `Início do período de produção do lote de ${lot.cropType}`,
-                    date: pDate,
+                    date: new Date(plantingDate),
                 },
                 {
                     lotId: lot.id,
@@ -103,16 +107,14 @@ export async function POST(request: Request) {
                     description: lot.harvestWeight
                         ? `Colheita de ${lot.harvestWeight} ${lot.unit} de ${lot.cropType}`
                         : `Colheita de ${lot.cropType} realizada`,
-                    date: hDate,
+                    date: new Date(harvestDate),
                 }
             ]
         });
 
         return NextResponse.json(lot);
     } catch (error: any) {
-        console.error("Create Lot Error (Full):", error);
-
-        // Return raw error for debugging
+        console.error("Create Lot Error:", error);
         return NextResponse.json({
             error: 'Erro Interno: ' + (error.message || JSON.stringify(error))
         }, { status: 500 });
