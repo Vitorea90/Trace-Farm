@@ -19,7 +19,17 @@ export default async function TracePage({ params }: { params: { id: string } }) 
         where: { code: params.id },
         include: {
             events: { orderBy: { date: 'desc' } },
-            producers: true
+            producers: true,
+            createdBy: {
+                select: {
+                    id: true,
+                    name: true,
+                    role: true,
+                    cooperativeImage: true,
+                    profile: true,
+                    email: true
+                }
+            }
         }
     });
 
@@ -121,6 +131,58 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                         <Timeline events={lot.events} />
                     </div>
                 </section>
+
+                {/* Cooperative Section */}
+                {lot.createdBy && lot.createdBy.role === 'COOP' && (
+                    <section className="mb-8">
+                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-2">
+                            <Sprout className="text-primary-600" size={24} />
+                            Cooperativa Responsável
+                        </h2>
+
+                        <Link
+                            href={`/cooperative/${lot.createdBy.id}`}
+                            className="block bg-gradient-to-br from-primary-50 to-emerald-50 dark:from-primary-950 dark:to-emerald-950 rounded-2xl overflow-hidden shadow-lg border-2 border-primary-200 dark:border-primary-800 hover:border-primary-300 dark:hover:border-primary-700 transition-all hover:shadow-xl group"
+                        >
+                            <div className="p-6 flex items-center gap-6">
+                                {/* Cooperative Logo */}
+                                <div className="h-20 w-20 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 border-2 border-primary-300 dark:border-primary-700 flex items-center justify-center shrink-0">
+                                    {lot.createdBy.cooperativeImage ? (
+                                        <img
+                                            src={lot.createdBy.cooperativeImage}
+                                            alt={lot.createdBy.name || 'Cooperativa'}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <Sprout className="text-primary-600 dark:text-primary-400" size={40} />
+                                    )}
+                                </div>
+
+                                {/* Cooperative Info */}
+                                <div className="flex-1">
+                                    <h3 className="text-xl font-bold text-primary-900 dark:text-primary-100 mb-1">
+                                        {lot.createdBy.name || 'Cooperativa'}
+                                    </h3>
+                                    {lot.createdBy.profile ? (
+                                        <p className="text-sm text-primary-700 dark:text-primary-300 line-clamp-2">
+                                            {lot.createdBy.profile}
+                                        </p>
+                                    ) : (
+                                        <p className="text-sm text-primary-600 dark:text-primary-400">
+                                            Cooperativa certificada
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* View Profile Button */}
+                                <div className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold text-sm group-hover:gap-3 transition-all">
+                                    Ver Perfil
+                                    <User size={18} />
+                                </div>
+                            </div>
+                        </Link>
+                    </section>
+                )}
 
                 {/* Producers Section */}
                 <section className="mb-8">

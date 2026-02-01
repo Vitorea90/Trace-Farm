@@ -12,6 +12,12 @@ export default async function DashboardPage() {
     const userId = cookieStore.get('auth_user')?.value;
     const role = cookieStore.get('auth_role')?.value;
 
+    // Get current user data for profile display
+    const currentUser = userId ? await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true, profile: true, role: true }
+    }) : null;
+
     // Filter logic: Admins see all, Cooperatives see their own
     const isFilter = role !== 'admin' && userId;
     const baseFilter = isFilter ? { createdById: userId } : {};

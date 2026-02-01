@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { LayoutDashboard, Sprout, Settings, LogOut, Users } from "lucide-react";
+import { LayoutDashboard, Sprout, Settings, LogOut, Users, Building2 } from "lucide-react";
+import { cookies } from "next/headers";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const cookieStore = cookies();
+    const role = cookieStore.get('auth_role')?.value;
+
     return (
         <div className="flex min-h-screen bg-background">
             <aside className="w-64 bg-card border-r border-border hidden md:flex flex-col fixed h-full z-20">
@@ -29,6 +33,10 @@ export default function DashboardLayout({
                     <Link href="/dashboard/producers" className="flex items-center gap-3 px-4 py-3 text-zinc-700 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-primary-900/10 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
                         <Users size={20} />
                         <span className="font-medium">Produtores</span>
+                    </Link>
+                    <Link href="/dashboard/profile" className="flex items-center gap-3 px-4 py-3 text-zinc-700 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-primary-900/10 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
+                        <Building2 size={20} />
+                        <span className="font-medium">Perfil</span>
                     </Link>
                     <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800">
                         <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-3 text-zinc-700 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">

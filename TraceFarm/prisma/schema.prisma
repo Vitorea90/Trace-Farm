@@ -34,11 +34,19 @@ model User {
   certifications String? // Comma-separated certifications
   website       String? // Producer's website
   
+  // Cooperative Information
+  profile       String? // Cooperative profile/description
+  cooperativeImage   String? // Cooperative logo/profile photo
+  cooperativeGallery String? // JSON array of gallery image URLs
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  // Relation to Lot (Many-to-Many)
+  // Relation to Lot (Many-to-Many as producer)
   lots      Lot[]
+  
+  // Relation to Lot (One-to-Many as creator/cooperative)
+  createdLots Lot[] @relation("LotCreator")
 }
 
 model Lot {
@@ -46,6 +54,7 @@ model Lot {
   code                 String   @unique
   
   createdById          String?  // Link to the Cooperative (User)
+  createdBy            User?    @relation("LotCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   
   // Producers (Many-to-Many)

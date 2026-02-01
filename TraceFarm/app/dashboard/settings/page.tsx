@@ -1,6 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function SettingsPage() {
@@ -8,10 +6,8 @@ export default function SettingsPage() {
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight text-foreground">Configurações</h1>
-                <p className="text-zinc-500">Gerencie suas preferências e dados da conta.</p>
+                <p className="text-zinc-500">Gerencie suas preferências do sistema.</p>
             </div>
-
-
 
             <Card>
                 <CardHeader>
