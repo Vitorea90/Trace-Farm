@@ -114,8 +114,8 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                             <ShieldCheck className="text-white" size={28} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-emerald-900 dark:text-emerald-100">Authenticity Verified</h3>
-                            <p className="text-sm text-emerald-700 dark:text-emerald-300">This product has been traced and verified</p>
+                            <h3 className="text-lg font-bold text-emerald-900 dark:text-emerald-100">Autenticidade Verificada</h3>
+                            <p className="text-sm text-emerald-700 dark:text-emerald-300">Este produto foi rastreado e verificado</p>
                         </div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                 <section className="mb-8">
                     <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-2">
                         <Leaf className="text-primary-600" size={24} />
-                        Product Journey
+                        Jornada do Produto
                     </h2>
 
                     <div className="bg-white dark:bg-zinc-900/50 rounded-2xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-800">
@@ -186,7 +186,7 @@ export default async function TracePage({ params }: { params: { id: string } }) 
 
                 {/* Producers Section */}
                 <section className="mb-8">
-                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Responsible Producers</h2>
+                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Produtores Responsáveis</h2>
 
                     <div className="space-y-4">
                         {lot.producers.map(producer => (
@@ -220,7 +220,7 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                                             )}
                                         </div>
                                         <div>
-                                            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{producer.name || 'Producer'}</h3>
+                                            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{producer.name || 'Produtor'}</h3>
                                             <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">{producer.farmName}</p>
                                         </div>
                                     </div>
@@ -252,7 +252,7 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                 {/* Certifications - from lot data */}
                 {lot.certifications && (
                     <section className="mb-8">
-                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Certifications</h2>
+                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Certificações</h2>
                         <div className="grid grid-cols-2 gap-4">
                             {lot.certifications.split(',').map((cert: string, idx: number) => (
                                 <div key={idx} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
@@ -267,13 +267,13 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                 {/* Our Commitment Card */}
                 <section className="mb-8">
                     <div className="bg-gradient-to-br from-primary-800 to-primary-900 rounded-2xl p-8 shadow-xl text-white">
-                        <h2 className="text-2xl font-bold mb-4">Our Commitment</h2>
+                        <h2 className="text-2xl font-bold mb-4">Nosso Compromisso</h2>
                         <p className="text-primary-100 leading-relaxed mb-4">
-                            We bring transparency to every step of our production process. From production to harvest,
-                            every stage is documented and verified to ensure the highest quality and sustainability standards.
+                            Trazemos transparência para cada etapa do nosso processo de produção. Da produção à colheita,
+                            cada estágio é documentado e verificado para garantir os mais altos padrões de qualidade e sustentabilidade.
                         </p>
                         <p className="text-primary-200 text-sm">
-                            By choosing our products, you support sustainable farming practices and local communities.
+                            Ao escolher nossos produtos, você apoia práticas agrícolas sustentáveis e comunidades locais.
                         </p>
                     </div>
                 </section>
@@ -283,21 +283,21 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                     <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800/30 text-center">
                         <Sprout className="mx-auto text-emerald-600 mb-3" size={32} />
                         <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
-                            {lot.area} <span className="text-base font-normal">{lot.unit}</span>
+                            {lot.area} <span className="text-base font-normal">{lot.unit === 'LITERS' || lot.unit === 'LITROS' ? 'L' : lot.unit === 'KG' ? 'kg' : lot.unit}</span>
                         </div>
-                        <div className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">Total Volume</div>
+                        <div className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">Volume Total</div>
                     </div>
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800/30 text-center">
                         <User className="mx-auto text-blue-600 mb-3" size={32} />
                         <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{lot.producers.length}</div>
-                        <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">Producer Families</div>
+                        <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">Famílias Produtoras</div>
                     </div>
                 </div>
 
                 {/* Footer */}
                 <div className="text-center pt-8 pb-8 opacity-50">
                     <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                        Traceability powered by <strong className="text-primary-600">AgroTrace</strong>
+                        Rastreabilidade fornecida por <strong className="text-primary-600">AgroTrace</strong>
                     </p>
                 </div>
             </div>

@@ -140,11 +140,23 @@ export function ProducerForm({ initialData, isEdit = false }: ProducerFormProps)
                         <div className="grid md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Telefone</label>
-                                <Input name="phone" type="tel" defaultValue={initialData?.phone || ''} placeholder="(00) 00000-0000" />
+                                <Input
+                                    name="phone"
+                                    type="tel"
+                                    defaultValue={initialData?.phone || ''}
+                                    placeholder="(00) 00000-0000"
+                                    pattern="[0-9()\s-+]*"
+                                    title="Digite apenas números, parênteses, espaços, hífens ou +"
+                                />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Website</label>
-                                <Input name="website" type="url" defaultValue={initialData?.website || ''} placeholder="https://www.fazenda.com" />
+                                <label className="text-sm font-medium">Website (opcional)</label>
+                                <Input
+                                    name="website"
+                                    type="text"
+                                    defaultValue={initialData?.website || ''}
+                                    placeholder="https://www.fazenda.com"
+                                />
                             </div>
                         </div>
 
@@ -217,7 +229,7 @@ export function ProducerForm({ initialData, isEdit = false }: ProducerFormProps)
                         {loading ? <Loader2 className="animate-spin" size={18} /> : 'Salvar'}
                     </Button>
                 </div>
-            </form>
-        </div>
+            </form >
+        </div >
     );
 }

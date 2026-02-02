@@ -59,7 +59,7 @@ export default async function LotsPage() {
                                     <ActionButtons id={lot.id} type="lots" />
                                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${lot.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                                         }`}>
-                                        {lot.status === 'ACTIVE' ? 'Em Andamento' : lot.status}
+                                        {lot.status === 'ACTIVE' ? 'Em Andamento' : (lot.status === 'SOLD' || lot.status === 'VENDIDO') ? 'Vendido' : lot.status}
                                     </span>
                                 </div>
                             </div>
@@ -67,7 +67,7 @@ export default async function LotsPage() {
                         <CardContent className="space-y-3">
                             <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
                                 <MapPin size={16} />
-                                {lot.storageLocation || 'Local não definido'} • {lot.area} {lot.unit}
+                                {lot.storageLocation || 'Local não definido'} • {lot.area} {lot.unit === 'LITERS' || lot.unit === 'LITROS' ? 'L' : lot.unit === 'KG' ? 'kg' : lot.unit}
                             </div>
                             <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
                                 <Calendar size={16} />

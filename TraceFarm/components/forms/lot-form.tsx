@@ -166,7 +166,7 @@ export function LotForm({ initialData, isEdit = false }: LotFormProps) {
                                     required
                                 >
                                     <option value="KG">Quilos (kg)</option>
-                                    <option value="LITERS">Litros (L)</option>
+                                    <option value="LITROS">Litros (L)</option>
                                 </select>
                             </div>
                             <div className="space-y-2">

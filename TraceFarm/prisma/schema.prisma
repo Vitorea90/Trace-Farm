@@ -68,7 +68,7 @@ model Lot {
   longitude            Float?
 
   area                 Float
-  unit                 String   @default("KG") // KG or LITERS
+  unit                 String   @default("KG") // KG ou LITROS
   
   // Production dates
   plantingDate         DateTime
