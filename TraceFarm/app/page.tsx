@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, QrCode, Menu, Tractor, X, Instagram, Phone } from "lucide-react";
 
 export default function Home() {
@@ -30,12 +31,16 @@ export default function Home() {
 
             {/* Navbar */}
             <nav className="relative z-20 flex items-center justify-between px-6 py-6 md:px-12 max-w-7xl mx-auto w-full">
-                <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                    <div className="h-8 w-8 bg-green-500 rounded-lg flex items-center justify-center text-black">
-                        <Tractor size={20} />
-                    </div>
-                    <span>Trace Farm</span>
-                </div>
+                <Link href="/" className="flex items-center">
+                    <Image
+                        src="/tracefarm-logo.png"
+                        alt="TraceFarm"
+                        width={320}
+                        height={80}
+                        className="w-auto h-20 brightness-0 invert"
+                        priority
+                    />
+                </Link>
                 <div className="relative">
                     <button
                         onClick={toggleMenu}

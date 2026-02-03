@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { LayoutDashboard, Sprout, Settings, LogOut, Users, Building2 } from "lucide-react";
 import { cookies } from "next/headers";
 
@@ -14,10 +15,15 @@ export default async function DashboardLayout({
         <div className="flex min-h-screen bg-background">
             <aside className="w-64 bg-card border-r border-border hidden md:flex flex-col fixed h-full z-20">
                 <div className="p-6 border-b border-zinc-100 dark:border-zinc-800">
-                    <Link href="/">
-                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-emerald-600 cursor-pointer">
-                            TraceFarm
-                        </h1>
+                    <Link href="/" className="block">
+                        <Image
+                            src="/tracefarm-logo.png"
+                            alt="TraceFarm"
+                            width={320}
+                            height={80}
+                            className="w-auto h-24 invert dark:invert-0"
+                            priority
+                        />
                     </Link>
                 </div>
 

@@ -23,7 +23,8 @@ export function ActionButtons({ id, type }: ActionButtonsProps) {
 
         setLoading(true);
         try {
-            const res = await fetch(`/api/${type}/${id}`, {
+            const apiPath = type === 'users' ? `/api/admin/${type}/${id}` : `/api/${type}/${id}`;
+            const res = await fetch(apiPath, {
                 method: 'DELETE',
             });
 

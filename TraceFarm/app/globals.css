@@ -41,9 +41,71 @@ body {
   }
 }
 
+/* AgroTrace Premium Theme */
+:root {
+  /* Forest Green Palette */
+  --forest-green-dark: 26, 58, 46;
+  /* #1a3a2e */
+  --forest-green: 45, 90, 69;
+  /* #2d5a45 */
+  --forest-green-light: 52, 168, 83;
+  /* #34a853 */
+
+  /* Charcoal Backgrounds */
+  --charcoal-bg: 26, 26, 26;
+  /* #1a1a1a */
+  --charcoal-card: 42, 42, 42;
+  /* #2a2a2a */
+
+  /* Neon Green Accent */
+  --neon-green: 57, 255, 20;
+  /* #39ff14 */
+  --neon-green-glow: 57, 255, 20;
+  /* #39ff14 with opacity */
+}
+
 /* Custom premium styles */
 .glass-panel {
   @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
   /* Dark mode support */
   @apply dark:bg-black/40 dark:border-white/10;
+}
+
+/* Glassmorphism Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass-card {
+  background: rgba(42, 42, 42, 0.4);
+  border: 1px solid rgba(57, 255, 20, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Neon Green Glow Effect */
+.neon-glow {
+  box-shadow: 0 0 10px rgba(var(--neon-green), 0.3),
+    0 0 20px rgba(var(--neon-green), 0.2),
+    0 0 30px rgba(var(--neon-green), 0.1);
+}
+
+/* Floating Badge */
+.floating-badge {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }

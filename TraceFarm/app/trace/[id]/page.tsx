@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import { Leaf, Award, MapPin, Calendar, Sprout, User, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from 'next/dynamic';
 
 const MapView = dynamic(() => import('@/components/ui/map-view'), {
@@ -79,74 +80,92 @@ export default async function TracePage({ params }: { params: { id: string } }) 
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-950 dark:to-zinc-900">
+        <div className="min-h-screen bg-[rgb(var(--charcoal-bg))] dark:bg-[rgb(var(--charcoal-bg))]">
             {/* Hero Image Section */}
-            <div className="relative h-80 md:h-96 bg-gradient-to-br from-primary-900 to-primary-800 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
-                <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-zinc-950 via-transparent to-transparent" />
+            <div className="relative h-[500px] bg-gradient-to-br from-[rgb(var(--forest-green-dark))] to-[rgb(var(--forest-green))] overflow-hidden">
+                {/* Background Image - Bee Farm/Honeycomb */}
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--charcoal-bg))] via-transparent to-transparent" />
 
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                    <div className="max-w-2xl mx-auto">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{lot.cropType}</h1>
-                        <div className="flex flex-wrap items-center gap-4 text-primary-100 text-sm">
-                            <span className="flex items-center gap-1.5">
-                                <Calendar size={16} />
-                                Colheita {new Date(lot.harvestDate).getFullYear()}
+                {/* Content Container */}
+                <div className="relative h-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col justify-center">
+                    {/* TraceFarm Logo */}
+                    <Link href="/" className="mb-8 inline-block">
+                        <Image
+                            src="/tracefarm-logo.png"
+                            alt="TraceFarm"
+                            width={320}
+                            height={80}
+                            className="w-auto h-20 brightness-0 invert"
+                            priority
+                        />
+                    </Link>
+
+                    {/* Product Title */}
+                    <h1 className="text-7xl md:text-8xl font-bold text-white mb-4 tracking-tight">
+                        {lot.cropType}
+                    </h1>
+
+                    {/* Lot Info */}
+                    <div className="flex flex-wrap items-center gap-6 text-white/80 text-base mb-6">
+                        <span className="flex items-center gap-2 font-mono text-[rgb(var(--neon-green))]">
+                            LOT-{lot.code}
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <Calendar size={18} />
+                            {formatDate(lot.harvestDate)}
+                        </span>
+                        {lot.locationname && (
+                            <span className="flex items-center gap-2">
+                                <MapPin size={18} />
+                                {lot.locationname}
                             </span>
-                            {lot.locationname && (
-                                <span className="flex items-center gap-1.5">
-                                    <MapPin size={16} />
-                                    {lot.locationname}
-                                </span>
-                            )}
+                        )}
+                    </div>
+
+                    {/* Floating Authenticity Badge */}
+                    <div className="inline-flex items-center gap-3 glass-card px-6 py-4 rounded-2xl border-2 border-[rgb(var(--neon-green))]/30 neon-glow floating-badge max-w-fit">
+                        <div className="h-10 w-10 rounded-full bg-[rgb(var(--neon-green))] flex items-center justify-center">
+                            <ShieldCheck className="text-[rgb(var(--charcoal-bg))]" size={24} />
+                        </div>
+                        <div>
+                            <h3 className="text-base font-bold text-white">Autenticidade Verificada</h3>
+                            <p className="text-sm text-white/70">Rastreabilidade garantida</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="max-w-2xl mx-auto px-6 pb-16 -mt-8 relative z-10">
-
-                {/* Authenticity Verified Badge */}
-                <div className="bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 mb-8 shadow-sm">
-                    <div className="flex items-center justify-center gap-3">
-                        <div className="h-12 w-12 rounded-full bg-emerald-500 flex items-center justify-center">
-                            <ShieldCheck className="text-white" size={28} />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-bold text-emerald-900 dark:text-emerald-100">Autenticidade Verificada</h3>
-                            <p className="text-sm text-emerald-700 dark:text-emerald-300">Este produto foi rastreado e verificado</p>
-                        </div>
-                    </div>
-                </div>
+            <div className="max-w-7xl mx-auto px-6 md:px-8 py-16 relative z-10">
 
                 {/* Product Journey */}
-                <section className="mb-8">
-                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-2">
-                        <Leaf className="text-primary-600" size={24} />
+                <section className="mb-12">
+                    <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                        <Leaf className="text-[rgb(var(--neon-green))]" size={28} />
                         Jornada do Produto
                     </h2>
 
-                    <div className="bg-white dark:bg-zinc-900/50 rounded-2xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-800">
+                    <div className="glass-card rounded-3xl p-8">
                         <Timeline events={lot.events} />
                     </div>
                 </section>
 
                 {/* Cooperative Section */}
                 {lot.createdBy && lot.createdBy.role === 'COOP' && (
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-2">
-                            <Sprout className="text-primary-600" size={24} />
-                            Cooperativa Responsável
+                    <section className="mb-12">
+                        <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                            <Sprout className="text-[rgb(var(--neon-green))]" size={28} />
+                            Cooperativa
                         </h2>
 
                         <Link
                             href={`/cooperative/${lot.createdBy.id}`}
-                            className="block bg-gradient-to-br from-primary-50 to-emerald-50 dark:from-primary-950 dark:to-emerald-950 rounded-2xl overflow-hidden shadow-lg border-2 border-primary-200 dark:border-primary-800 hover:border-primary-300 dark:hover:border-primary-700 transition-all hover:shadow-xl group"
+                            className="block glass-card rounded-3xl overflow-hidden hover:border-[rgb(var(--neon-green))]/50 transition-all group"
                         >
-                            <div className="p-6 flex items-center gap-6">
+                            <div className="p-8 flex items-center gap-6">
                                 {/* Cooperative Logo */}
-                                <div className="h-20 w-20 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 border-2 border-primary-300 dark:border-primary-700 flex items-center justify-center shrink-0">
+                                <div className="h-24 w-24 rounded-2xl overflow-hidden bg-white/10 border-2 border-white/20 flex items-center justify-center shrink-0">
                                     {lot.createdBy.cooperativeImage ? (
                                         <img
                                             src={lot.createdBy.cooperativeImage}
@@ -154,30 +173,33 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <Sprout className="text-primary-600 dark:text-primary-400" size={40} />
+                                        <Sprout className="text-[rgb(var(--neon-green))]" size={48} />
                                     )}
                                 </div>
 
                                 {/* Cooperative Info */}
                                 <div className="flex-1">
-                                    <h3 className="text-xl font-bold text-primary-900 dark:text-primary-100 mb-1">
+                                    <h3 className="text-2xl font-bold text-white mb-2">
                                         {lot.createdBy.name || 'Cooperativa'}
                                     </h3>
                                     {lot.createdBy.profile ? (
-                                        <p className="text-sm text-primary-700 dark:text-primary-300 line-clamp-2">
+                                        <p className="text-base text-white/70 line-clamp-2">
                                             {lot.createdBy.profile}
                                         </p>
                                     ) : (
-                                        <p className="text-sm text-primary-600 dark:text-primary-400">
+                                        <p className="text-base text-white/60">
                                             Cooperativa certificada
                                         </p>
                                     )}
+                                    <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(var(--neon-green))]/20 text-[rgb(var(--neon-green))] text-sm font-semibold">
+                                        Cooperativa
+                                    </div>
                                 </div>
 
                                 {/* View Profile Button */}
-                                <div className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold text-sm group-hover:gap-3 transition-all">
+                                <div className="flex items-center gap-2 text-[rgb(var(--neon-green))] font-semibold group-hover:gap-3 transition-all">
                                     Ver Perfil
-                                    <User size={18} />
+                                    <User size={20} />
                                 </div>
                             </div>
                         </Link>
@@ -185,64 +207,64 @@ export default async function TracePage({ params }: { params: { id: string } }) 
                 )}
 
                 {/* Producers Section */}
-                <section className="mb-8">
-                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Produtores Responsáveis</h2>
+                {lot.producers.length > 0 && (
+                    <section className="mb-12">
+                        <h2 className="text-3xl font-bold text-white mb-8">Produtores Responsáveis</h2>
 
-                    <div className="space-y-4">
-                        {lot.producers.map(producer => (
-                            <Link
-                                key={producer.id}
-                                href={`/producer/${producer.id}`}
-                                className="block bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-lg border border-zinc-100 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all hover:shadow-xl group"
-                            >
-                                {/* Farm Image */}
-                                <div className="h-40 bg-zinc-200 dark:bg-zinc-800 w-full relative overflow-hidden">
-                                    {producer.farmImage ? (
-                                        <img src={producer.farmImage} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Farm" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-primary-50 dark:bg-primary-950 text-primary-300">
-                                            <Sprout size={56} />
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="p-5 flex items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 text-xl font-bold shrink-0 overflow-hidden">
-                                            {producer.profileImage ? (
-                                                <img
-                                                    src={producer.profileImage}
-                                                    alt={producer.name || 'Produtor'}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <span>{producer.name ? producer.name[0].toUpperCase() : 'P'}</span>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{producer.name || 'Produtor'}</h3>
-                                            <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">{producer.farmName}</p>
-                                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {lot.producers.map(producer => (
+                                <Link
+                                    key={producer.id}
+                                    href={`/producer/${producer.id}`}
+                                    className="block glass-card rounded-3xl overflow-hidden hover:border-[rgb(var(--neon-green))]/50 transition-all group"
+                                >
+                                    {/* Farm Image */}
+                                    <div className="h-48 bg-white/5 w-full relative overflow-hidden">
+                                        {producer.farmImage ? (
+                                            <img src={producer.farmImage} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Farm" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-white/5 text-white/30">
+                                                <Sprout size={64} />
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold text-sm group-hover:gap-3 transition-all">
-                                        Ver Perfil
-                                        <User size={18} />
+                                    <div className="p-6">
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="h-16 w-16 rounded-full bg-white/10 flex items-center justify-center text-white text-xl font-bold shrink-0 overflow-hidden border-2 border-white/20">
+                                                {producer.profileImage ? (
+                                                    <img
+                                                        src={producer.profileImage}
+                                                        alt={producer.name || 'Produtor'}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <span>{producer.name ? producer.name[0].toUpperCase() : 'P'}</span>
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="text-xl font-bold text-white">{producer.name || 'Produtor'}</h3>
+                                                <p className="text-sm text-white/60 font-medium">{producer.farmName}</p>
+                                            </div>
+                                        </div>
+                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(var(--neon-green))]/20 text-[rgb(var(--neon-green))] text-sm font-semibold">
+                                            Produtor #{producer.id.slice(0, 6)}
+                                        </div>
                                     </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* Location Map */}
                 {locations.length > 0 && (
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-2">
-                            <MapPin className="text-emerald-600" size={24} />
-                            Localização
+                    <section className="mb-12">
+                        <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                            <MapPin className="text-[rgb(var(--neon-green))]" size={28} />
+                            Localização de Origem
                         </h2>
-                        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-800">
+                        <div className="glass-card rounded-3xl p-8">
                             <MapView locations={locations} height="450px" />
                         </div>
                     </section>
@@ -251,53 +273,56 @@ export default async function TracePage({ params }: { params: { id: string } }) 
 
                 {/* Certifications - from lot data */}
                 {lot.certifications && (
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Certificações</h2>
-                        <div className="grid grid-cols-2 gap-4">
+                    <section className="mb-12">
+                        <h2 className="text-3xl font-bold text-white mb-8">Certificações</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {lot.certifications.split(',').map((cert: string, idx: number) => (
-                                <div key={idx} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-                                    <Award className="text-emerald-600 mb-3" size={32} />
-                                    <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{cert.trim()}</p>
+                                <div key={idx} className="glass-card rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:border-[rgb(var(--neon-green))]/50 transition-all">
+                                    <div className="h-16 w-16 rounded-full bg-[rgb(var(--neon-green))]/20 flex items-center justify-center mb-4">
+                                        <Award className="text-[rgb(var(--neon-green))]" size={32} />
+                                    </div>
+                                    <p className="text-sm font-semibold text-white">{cert.trim()}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
                 )}
 
-                {/* Our Commitment Card */}
-                <section className="mb-8">
-                    <div className="bg-gradient-to-br from-primary-800 to-primary-900 rounded-2xl p-8 shadow-xl text-white">
-                        <h2 className="text-2xl font-bold mb-4">Nosso Compromisso</h2>
-                        <p className="text-primary-100 leading-relaxed mb-4">
-                            Trazemos transparência para cada etapa do nosso processo de produção. Da produção à colheita,
-                            cada estágio é documentado e verificado para garantir os mais altos padrões de qualidade e sustentabilidade.
-                        </p>
-                        <p className="text-primary-200 text-sm">
-                            Ao escolher nossos produtos, você apoia práticas agrícolas sustentáveis e comunidades locais.
-                        </p>
-                    </div>
-                </section>
+
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800/30 text-center">
-                        <Sprout className="mx-auto text-emerald-600 mb-3" size={32} />
-                        <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
-                            {lot.area} <span className="text-base font-normal">{lot.unit === 'LITERS' || lot.unit === 'LITROS' ? 'L' : lot.unit === 'KG' ? 'kg' : lot.unit}</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div className="glass-card rounded-3xl p-8 text-center hover:border-[rgb(var(--neon-green))]/50 transition-all">
+                        <div className="h-16 w-16 rounded-full bg-[rgb(var(--neon-green))]/20 flex items-center justify-center mx-auto mb-4">
+                            <Sprout className="text-[rgb(var(--neon-green))]" size={32} />
                         </div>
-                        <div className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">Volume Total</div>
+                        <div className="text-5xl font-bold text-white mb-2">
+                            {lot.area} <span className="text-2xl font-normal text-white/60">{lot.unit === 'LITERS' || lot.unit === 'LITROS' || lot.unit === 'Litros' ? 'L' : lot.unit === 'KG' ? 'kg' : lot.unit}</span>
+                        </div>
+                        <div className="text-sm text-white/70 font-medium">Volume do Lote</div>
                     </div>
-                    <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800/30 text-center">
-                        <User className="mx-auto text-blue-600 mb-3" size={32} />
-                        <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{lot.producers.length}</div>
-                        <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">Famílias Produtoras</div>
+                    <div className="glass-card rounded-3xl p-8 text-center hover:border-[rgb(var(--neon-green))]/50 transition-all">
+                        <div className="h-16 w-16 rounded-full bg-[rgb(var(--neon-green))]/20 flex items-center justify-center mx-auto mb-4">
+                            <User className="text-[rgb(var(--neon-green))]" size={32} />
+                        </div>
+                        <div className="text-5xl font-bold text-white mb-2">{lot.producers.length}</div>
+                        <div className="text-sm text-white/70 font-medium">Famílias Envolvidas</div>
+                    </div>
+                    <div className="glass-card rounded-3xl p-8 text-center hover:border-[rgb(var(--neon-green))]/50 transition-all">
+                        <div className="h-16 w-16 rounded-full bg-[rgb(var(--neon-green))]/20 flex items-center justify-center mx-auto mb-4">
+                            <MapPin className="text-[rgb(var(--neon-green))]" size={32} />
+                        </div>
+                        <div className="text-2xl font-bold text-white mb-2">
+                            {lot.locationname || lot.producers[0]?.farmName?.split(',').pop()?.trim() || 'Brasil'}
+                        </div>
+                        <div className="text-sm text-white/70 font-medium">Região de Origem</div>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="text-center pt-8 pb-8 opacity-50">
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                        Rastreabilidade fornecida por <strong className="text-primary-600">AgroTrace</strong>
+                <div className="text-center pt-12 pb-8">
+                    <p className="text-sm text-white/40">
+                        Rastreabilidade fornecida por <strong className="text-[rgb(var(--neon-green))]">TraceFarm</strong>
                     </p>
                 </div>
             </div>

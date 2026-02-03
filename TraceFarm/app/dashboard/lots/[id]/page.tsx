@@ -91,10 +91,16 @@ export default async function LotDetailPage({ params }: { params: { id: string }
                             <CardContent className="pt-6">
                                 <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4">Status Atual</h3>
                                 <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-500 mb-2">
-                                    {lot.status === 'ACTIVE' ? 'Disponível' : lot.status === 'VENDIDO' ? 'Vendido' : lot.status}
+                                    {lot.status === 'ACTIVE' ? 'Ativo' :
+                                        lot.status === 'SOLD' ? 'Vendido' :
+                                            lot.status === 'VENDIDO' ? 'Vendido' :
+                                                lot.status === 'ATIVO' ? 'Ativo' :
+                                                    lot.status}
                                 </div>
                                 <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                                    {lot.status === 'ACTIVE' ? 'Lote cadastrado e disponível para venda' : 'Status do lote'}
+                                    {lot.status === 'ACTIVE' || lot.status === 'ATIVO' ? 'Lote cadastrado e disponível para venda' :
+                                        lot.status === 'SOLD' || lot.status === 'VENDIDO' ? 'Lote comercializado' :
+                                            'Status do lote'}
                                 </p>
                             </CardContent>
                         </Card>

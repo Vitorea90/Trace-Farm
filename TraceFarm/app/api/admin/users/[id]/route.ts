@@ -43,27 +43,52 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
     try {
-        // First delete lots created by this user (or if they are producers of lots)
-        // Since many-to-many, we disconnect
-        // But if they are CREATOR of a lot, we might want to delete the lot?
-
-        // 1. Delete events of lots created by this producer? No, too complex.
-
-        // Simple approach: Use transaction to cleanup
         await prisma.$transaction(async (tx) => {
-            // If manual cleanup is needed beyond schema cascade:
-            // Delete created users (Producers)
-            // Schema cascade handles createdUsers if set.
+            // First, find all lots where this user is listed as a producer (many-to-many)
+            const lotsWithThisProducer = await tx.lot.findMany({
+                where: {
+                    producers: {
+                        some: {
+                            id: params.id
+                        }
+                    }
+                },
+                select: { id: true }
+            });
 
-            // What about Lots? User -> Many-to-Many -> Lots
-            // Prisma handles implicit m-n delete usually, but check.
+            // Disconnect this user from those lots
+            for (const lot of lotsWithThisProducer) {
+                await tx.lot.update({
+                    where: { id: lot.id },
+                    data: {
+                        producers: {
+                            disconnect: { id: params.id }
+                        }
+                    }
+                });
+            }
 
+            // For lots created by this user (cooperative), set createdById to null
+            // This keeps the lots but removes the creator reference
+            await tx.lot.updateMany({
+                where: {
+                    createdById: params.id
+                },
+                data: {
+                    createdById: null
+                }
+            });
+
+            // Now we can safely delete the user
+            // The schema already handles cascade delete for createdUsers (producers created by this cooperative)
             await tx.user.delete({ where: { id: params.id } });
         });
 
         return NextResponse.json({ success: true });
     } catch (error: any) {
         console.error("Delete Error:", error);
-        return NextResponse.json({ error: 'Failed to delete user. Ensure all related lots are removed first.' }, { status: 500 });
+        return NextResponse.json({
+            error: error.message || 'Falha ao excluir usuário. Tente novamente.'
+        }, { status: 500 });
     }
 }

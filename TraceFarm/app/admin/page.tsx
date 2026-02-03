@@ -5,7 +5,11 @@ import prisma from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboardPage() {
-    const totalUsers = await prisma.user.count();
+    const totalUsers = await prisma.user.count({
+        where: {
+            role: 'COOP'
+        }
+    });
     const totalProducers = await prisma.user.count({ where: { role: 'PRODUCER' } });
 
     return (
